@@ -95,7 +95,7 @@ class SolarSystem:
                   facecolor='none', edgecolor='gray', labelcolor='gray',
                   fontsize=16)
 
-        plt.savefig('solar_system_accurate_top_8k.png', 
+        plt.savefig('.\exports\solar_system_accurate_top_8k.png', 
                    dpi=300,
                    bbox_inches='tight',
                    transparent=True,

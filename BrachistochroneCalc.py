@@ -205,12 +205,12 @@ def main():
     routes_1g = sorted(routes, key=lambda x: x[0][7])  # Index 7 is max_time_days_1g
     routes_03g = sorted(routes, key=lambda x: x[0][11])  # Index 11 is max_time_days_0_3g
     
-    # Write CSV output sorted by 1g max time
-    csv_filename = f"brachistochrone_extended_{timestamp}.csv"
+    # Write CSV output with updated path
+    csv_filename = f"exports/brachistochrone_extended_{timestamp}.csv"
     with open(csv_filename, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(headers)
-        writer.writerows([r[0] for r in routes_1g])  # Only write the row data, not velocities
+        writer.writerows([r[0] for r in routes_1g])
     
     # Generate markdown
     md_lines = [
@@ -241,8 +241,8 @@ def main():
             PLANETS[name1], PLANETS[name2], Constants.G_0_3)
         md_lines.append(formatter.format_markdown_row(name1, name2, metrics_03g, max_vel_03g))
     
-    # Write markdown output
-    md_filename = f"brachistochrone_extended_{timestamp}.md"
+    # Write markdown output with updated path
+    md_filename = f"exports/brachistochrone_extended_{timestamp}.md"
     with open(md_filename, 'w', encoding='utf-8') as f:
         f.write("\n".join(md_lines))
     
