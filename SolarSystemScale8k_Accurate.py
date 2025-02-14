@@ -59,7 +59,7 @@ class SolarSystem:
             markersize = 0.75 if planet in ['Ceres', 'Eros'] else 1.5
             linestyle = '--' if planet in ['Ceres', 'Eros'] else '-'
             plt.plot(x_final, y_final, linestyle, color=data['color'], alpha=1, 
-                    label=f"{planet} (e={data['e']:.3f})", linewidth=0.15)
+                    label=f"{planet} (e={data['e']:.3f})", linewidth=0.3)
             
             # Plot planet at a random position
             random_pos = np.random.randint(0, len(theta))
@@ -95,10 +95,11 @@ class SolarSystem:
                   facecolor='none', edgecolor='gray', labelcolor='gray',
                   fontsize=16)
 
-        plt.savefig('.\exports\solar_system_accurate_top_8k.png', 
+        plt.savefig(r'.\exports\solar_system_accurate_top_8k.png',  # Use raw string with 'r' prefix
                    dpi=300,
                    bbox_inches='tight',
-                   transparent=True,
+                   facecolor='black',
+                   edgecolor='none',
                    pad_inches=0.5)
 
     def plot_side_view(self):
