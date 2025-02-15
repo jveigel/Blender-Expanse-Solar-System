@@ -39,6 +39,7 @@ PLANETS: Dict[str, Planet] = {
     'Venus': Planet(0.718, 0.728),
     'Earth': Planet(0.983, 1.017),
     'Mars': Planet(1.381, 1.666),
+    'Ceres': Planet(2.5518, 2.9775),
     'Jupiter': Planet(4.950, 5.457),
     'Saturn': Planet(9.041, 10.124),
     'Uranus': Planet(18.375, 20.063),
@@ -169,85 +170,87 @@ def main():
     formatter = DataFormatter()
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     
+    # Define solar system order for sorting
+    planet_order = ['Mercury', 'Venus', 'Earth', 'Mars', 'Ceres', 'Jupiter', 'Saturn', 'Uranus', 'Neptune']
+    
     # Generate all routes
     routes = []
     headers = [
         'origin_planet', 'destination_planet',
+        'min_time_days_0_3g', 'max_time_days_0_3g', 'median_time_days_0_3g',
+        'min_time_days_1g', 'max_time_days_1g', 'median_time_days_1g',
         'min_distance_au', 'max_distance_au',
         'min_distance_km', 'max_distance_km',
-        'min_time_days_1g', 'max_time_days_1g', 'median_time_days_1g',
-        'max_deltav_kms_1g',
-        'min_time_days_0_3g', 'max_time_days_0_3g', 'median_time_days_0_3g',
-        'max_deltav_kms_0_3g',
+        'max_deltav_kms_0_3g', 'max_deltav_kms_1g',
         'origin_perihelion_au', 'origin_aphelion_au',
         'destination_perihelion_au', 'destination_aphelion_au'
     ]
     
-    for name1, name2 in combinations(sorted(PLANETS.keys()), 2):
-        # Calculate metrics and max velocities
+    # Generate routes in solar system order
+    for origin_idx, name1 in enumerate(planet_order):
+        for name2 in planet_order[origin_idx + 1:]:
+            metrics_1g = calculator.calculate_metrics(
+                PLANETS[name1], PLANETS[name2], Constants.G)
+            metrics_03g = calculator.calculate_metrics(
+                PLANETS[name1], PLANETS[name2], Constants.G_0_3)
+            
+            row = [
+                name1, name2,
+                round(metrics_03g.min_time, 3),
+                round(metrics_03g.max_time, 3),
+                round(metrics_03g.median_time, 3),
+                round(metrics_1g.min_time, 3),
+                round(metrics_1g.max_time, 3),
+                round(metrics_1g.median_time, 3),
+                round(metrics_1g.min_distance, 6),
+                round(metrics_1g.max_distance, 6),
+                round(metrics_1g.min_distance * Constants.AU_TO_KM, 0),
+                round(metrics_1g.max_distance * Constants.AU_TO_KM, 0),
+                round(metrics_03g.delta_v, 2),
+                round(metrics_1g.delta_v, 2),
+                PLANETS[name1].perihelion,
+                PLANETS[name1].aphelion,
+                PLANETS[name2].perihelion,
+                PLANETS[name2].aphelion
+            ]
+            routes.append(row)
+    
+    # Add Alpha Centauri routes from each planet
+    for origin in planet_order:
         metrics_1g = calculator.calculate_metrics(
-            PLANETS[name1], PLANETS[name2], Constants.G)
+            PLANETS[origin], PLANETS['Alpha Centauri'], Constants.G)
         metrics_03g = calculator.calculate_metrics(
-            PLANETS[name1], PLANETS[name2], Constants.G_0_3)
+            PLANETS[origin], PLANETS['Alpha Centauri'], Constants.G_0_3)
         
-        # Calculate max velocities using max time
-        max_vel_1g = calculator.calculate_max_velocity(
-            metrics_1g.max_time * 86400, Constants.G)  # Convert days to seconds
-        max_vel_03g = calculator.calculate_max_velocity(
-            metrics_03g.max_time * 86400, Constants.G_0_3)
-        
-        row = formatter.generate_csv_row(
-            name1, name2, metrics_1g, metrics_03g,
-            PLANETS[name1], PLANETS[name2])
-        routes.append((row, max_vel_1g, max_vel_03g))
+        row = [
+            origin, 'Alpha Centauri',
+            round(metrics_03g.min_time, 3),
+            round(metrics_03g.max_time, 3),
+            round(metrics_03g.median_time, 3),
+            round(metrics_1g.min_time, 3),
+            round(metrics_1g.max_time, 3),
+            round(metrics_1g.median_time, 3),
+            round(metrics_1g.min_distance, 6),
+            round(metrics_1g.max_distance, 6),
+            round(metrics_1g.min_distance * Constants.AU_TO_KM, 0),
+            round(metrics_1g.max_distance * Constants.AU_TO_KM, 0),
+            round(metrics_03g.delta_v, 2),
+            round(metrics_1g.delta_v, 2),
+            PLANETS[origin].perihelion,
+            PLANETS[origin].aphelion,
+            PLANETS['Alpha Centauri'].perihelion,
+            PLANETS['Alpha Centauri'].aphelion
+        ]
+        routes.append(row)
     
-    # Sort routes by max time (1g for 1g section, 0.3g for 0.3g section)
-    routes_1g = sorted(routes, key=lambda x: x[0][7])  # Index 7 is max_time_days_1g
-    routes_03g = sorted(routes, key=lambda x: x[0][11])  # Index 11 is max_time_days_0_3g
-    
-    # Write CSV output with updated path
+    # Write CSV output
     csv_filename = f"exports/brachistochrone_extended_{timestamp}.csv"
     with open(csv_filename, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(headers)
-        writer.writerows([r[0] for r in routes_1g])
-    
-    # Generate markdown
-    md_lines = [
-        "# Brachistochrone Travel Times Between Planets",
-        f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n",
-        "## 1G Acceleration (Sorted by Max Travel Time)",
-        "| Route | Min Distance (km) | Max Distance (km) | Min Time | Max Time | Median Time | Max Velocity (km/s) | Delta-v (km/s) |",
-        "|-------|------------------|------------------|-----------|-----------|-------------|-------------------|---------------|"
-    ]
-    
-    # 1G section sorted by max time
-    for row, max_vel_1g, _ in routes_1g:
-        name1, name2 = row[0], row[1]
-        metrics_1g = calculator.calculate_metrics(
-            PLANETS[name1], PLANETS[name2], Constants.G)
-        md_lines.append(formatter.format_markdown_row(name1, name2, metrics_1g, max_vel_1g))
-    
-    md_lines.extend([
-        "\n## 0.3G Acceleration (Sorted by Max Travel Time)",
-        "| Route | Min Distance (km) | Max Distance (km) | Min Time | Max Time | Median Time | Max Velocity (km/s) | Delta-v (km/s) |",
-        "|-------|------------------|------------------|-----------|-----------|-------------|-------------------|---------------|"
-    ])
-    
-    # 0.3G section sorted by max time
-    for row, _, max_vel_03g in routes_03g:
-        name1, name2 = row[0], row[1]
-        metrics_03g = calculator.calculate_metrics(
-            PLANETS[name1], PLANETS[name2], Constants.G_0_3)
-        md_lines.append(formatter.format_markdown_row(name1, name2, metrics_03g, max_vel_03g))
-    
-    # Write markdown output with updated path
-    md_filename = f"exports/brachistochrone_extended_{timestamp}.md"
-    with open(md_filename, 'w', encoding='utf-8') as f:
-        f.write("\n".join(md_lines))
+        writer.writerows(routes)
     
     print(f"CSV data saved to: {csv_filename}")
-    print(f"Markdown format saved to: {md_filename}")
     print(f"Total routes calculated: {len(routes)}")
 
 if __name__ == "__main__":
