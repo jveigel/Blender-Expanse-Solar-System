@@ -1,0 +1,13 @@
+Config,Dry Mass (tons),Total Mass (tons),Destination,Distance (ly),Acceleration (g),Ship Time,Burn Time,Coast Time,Max Velocity (%c),Delta-v Required (%c),Delta-v Available (%c)
+Ultra Light,"1,000","2,000",Alpha Centauri,4.37,0.907,262y 2m 21d,0y 0m 13d,262y 2m 8d,1.7,3.3,3.5
+Ultra Light,"1,000","2,000",Tau Ceti,11.9,0.907,714y 0m 13d,0y 0m 13d,714y 0m 0d,1.7,3.3,3.5
+Ultra Light,"1,000","2,000",Barnards Star,5.96,0.907,357y 7m 16d,0y 0m 13d,357y 7m 3d,1.7,3.3,3.5
+Light,"10,000","20,000",Alpha Centauri,4.37,0.091,262y 4m 19d,0y 4m 8d,262y 0m 10d,1.7,3.3,3.5
+Light,"10,000","20,000",Tau Ceti,11.9,0.091,714y 2m 11d,0y 4m 8d,713y 10m 3d,1.7,3.3,3.5
+Light,"10,000","20,000",Barnards Star,5.96,0.091,357y 9m 13d,0y 4m 8d,357y 5m 5d,1.7,3.3,3.5
+Medium,"100,000","200,000",Alpha Centauri,4.37,0.009,263y 11m 25d,3y 6m 21d,260y 5m 3d,1.7,3.3,3.5
+Medium,"100,000","200,000",Tau Ceti,11.9,0.009,715y 9m 18d,3y 6m 21d,712y 2m 26d,1.7,3.3,3.5
+Medium,"100,000","200,000",Barnards Star,5.96,0.009,359y 4m 20d,3y 6m 21d,355y 9m 29d,1.7,3.3,3.5
+Heavy,"1,000,000","2,000,000",Alpha Centauri,4.37,0.001,280y 0m 2d,35y 7m 5d,244y 4m 27d,1.7,3.3,3.5
+Heavy,"1,000,000","2,000,000",Tau Ceti,11.9,0.001,731y 9m 25d,35y 7m 5d,696y 2m 19d,1.7,3.3,3.5
+Heavy,"1,000,000","2,000,000",Barnards Star,5.96,0.001,375y 4m 28d,35y 7m 5d,339y 9m 21d,1.7,3.3,3.5

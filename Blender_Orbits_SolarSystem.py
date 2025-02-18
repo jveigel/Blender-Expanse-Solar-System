@@ -17,7 +17,8 @@ planets = {
     'Jupiter': {'a': 5.202561, 'e': 0.048498, 'inc': 1.303, 'node': 100.556, 'peri': 275.066},
     'Saturn': {'a': 9.537070, 'e': 0.054309, 'inc': 2.485, 'node': 113.715, 'peri': 338.716},
     'Uranus': {'a': 19.191264, 'e': 0.047318, 'inc': 0.773, 'node': 74.006, 'peri': 96.998},
-    'Neptune': {'a': 30.068963, 'e': 0.008676, 'inc': 1.770, 'node': 131.783, 'peri': 273.187}
+    'Neptune': {'a': 30.068963, 'e': 0.008676, 'inc': 1.770, 'node': 131.783, 'peri': 273.187},
+    'Pluto': {'a': 39.482117, 'e': 0.248897, 'inc': 17.140, 'node': 110.299, 'peri': 113.834}
 }
 
 def create_orbital_curve(planet_name, data, index, parent_object):
@@ -88,7 +89,17 @@ sun = bpy.context.active_object
 sun.name = 'Sun'
 sun.empty_display_size = 0.5
 
+# Add 1 AU reference circle
+reference_data = {
+    'a': 1.0,          # 1 AU
+    'e': 0.0,          # perfect circle
+    'inc': 0.0,        # no inclination
+    'node': 0.0,       # no node rotation
+    'peri': 0.0        # no perihelion argument
+}
+reference_orbit = create_orbital_curve('Reference', reference_data, 0, sun)
+
 # Create orbits
-planet_order = ['Mercury', 'Venus', 'Earth', 'Mars', 'Ceres', 'Eros', 'Jupiter', 'Saturn', 'Uranus', 'Neptune']
+planet_order = ['Mercury', 'Venus', 'Earth', 'Mars', 'Ceres', 'Eros', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']
 for index, planet_name in enumerate(planet_order, 1):
     orbit = create_orbital_curve(planet_name, planets[planet_name], index, sun)
