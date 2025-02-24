@@ -166,25 +166,33 @@ class DataFormatter:
         return f"| {route} | {min_distance} | {max_distance} | {min_time} | {max_time} | {median_time} | {velocity} | {deltav} |"
 
 def save_to_markdown(data, base_filename='brachistochrone_03g'):
-    """Save 0.3g results to markdown file with timestamp"""
+    """Save 0.3g results to markdown file with timestamp, sorted by delta-v"""
     if not os.path.exists('exports'):
         os.makedirs('exports')
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f'exports/{base_filename}_{timestamp}.md'
     
+    # Convert data to list of dictionaries for sorting
+    formatted_data = []
+    for row in data:
+        formatted_data.append({
+            'route': f"{row[0]} -> {row[1]}",
+            'min_time': days_to_dhm(float(row[2])),
+            'max_time': days_to_dhm(float(row[3])),
+            'delta_v': float(row[12]),  # max_deltav_kms_0_3g
+        })
+    
+    # Sort by delta-v
+    formatted_data.sort(key=lambda x: x['delta_v'])
+    
     with open(filename, 'w') as f:
         f.write("# Brachistochrone Travel Times (0.3g)\n\n")
         f.write("| Route | Min Time | Max Time | Delta-v (km/s) |\n")
         f.write("|--------|-----------|-----------|---------------|\n")
         
-        for row in data:
-            route = f"{row[0]} -> {row[1]}"
-            min_time = days_to_dhm(float(row[2]))  # min_time_days_0_3g
-            max_time = days_to_dhm(float(row[3]))  # max_time_days_0_3g
-            delta_v = f"{float(row[12]):,.0f}"     # max_deltav_kms_0_3g
-            
-            f.write(f"| {route} | {min_time} | {max_time} | {delta_v} |\n")
+        for row in formatted_data:
+            f.write(f"| {row['route']} | {row['min_time']} | {row['max_time']} | {row['delta_v']:,.0f} |\n")
     
     print(f"Markdown data saved to: {filename}")
 
