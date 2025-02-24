@@ -35,41 +35,41 @@ Attempts to estimate the interstellar travel times using the relativistic brachi
 
 ## Brachistochrone Travel Times (0.3g) - Sorted by Delta-v
 
-| Route | Min Time | Max Time | Delta-v (km/s) |
-|--------|-----------|-----------|---------------|
-| Mercury -> Venus | 2d 14h | 5d 16h | 1,450 |
-| Mercury -> Earth | 3d 18h | 6d 8h | 1,616 |
-| Venus -> Earth | 2d 15h | 6d 21h | 1,752 |
-| Mercury -> Mars | 4d 23h | 7d 15h | 1,937 |
-| Venus -> Mars | 4d 5h | 8d 1h | 2,052 |
-| Earth -> Mars | 3d 3h | 8d 13h | 2,173 |
-| Mercury -> Ceres | 7d 12h | 9d 16h | 2,462 |
-| Venus -> Ceres | 7d 1h | 10d 1h | 2,553 |
-| Earth -> Ceres | 6d 11h | 10d 10h | 2,651 |
-| Mars -> Ceres | 4d 21h | 11d 6h | 2,858 |
-| Mercury -> Jupiter | 11d 1h | 12d 17h | 3,228 |
-| Venus -> Jupiter | 10d 17h | 12d 23h | 3,299 |
-| Earth -> Jupiter | 10d 8h | 13d 6h | 3,375 |
-| Mars -> Jupiter | 9d 11h | 13d 22h | 3,540 |
-| Ceres -> Jupiter | 7d 8h | 15d 3h | 3,852 |
-| Mercury -> Saturn | 15d 6h | 16d 23h | 4,317 |
-| Venus -> Saturn | 15d 1h | 17d 4h | 4,369 |
-| Earth -> Saturn | 14d 18h | 17d 10h | 4,427 |
-| Mars -> Saturn | 14d 4h | 17d 22h | 4,554 |
-| Ceres -> Saturn | 12d 20h | 18d 21h | 4,801 |
-| Jupiter -> Saturn | 9d 21h | 20d 14h | 5,236 |
-| Mercury -> Uranus | 22d 2h | 23d 15h | 6,010 |
-| Venus -> Uranus | 21d 22h | 23d 19h | 6,048 |
-| Earth -> Uranus | 21d 18h | 23d 23h | 6,090 |
-| Mars -> Uranus | 21d 8h | 24d 8h | 6,183 |
-| Ceres -> Uranus | 20d 11h | 25d 1h | 6,367 |
-| Jupiter -> Uranus | 18d 18h | 26d 9h | 6,701 |
-| Saturn -> Uranus | 14d 23h | 28d 16h | 7,288 |
-| Mercury -> Neptune | 28d 6h | 29d 0h | 7,374 |
-| Venus -> Neptune | 28d 3h | 29d 3h | 7,405 |
-| Earth -> Neptune | 27d 23h | 29d 6h | 7,439 |
-| Mars -> Neptune | 27d 16h | 29d 14h | 7,516 |
-| Ceres -> Neptune | 27d 0h | 30d 4h | 7,668 |
-| Jupiter -> Neptune | 25d 17h | 31d 6h | 7,947 |
-| Saturn -> Neptune | 23d 3h | 33d 6h | 8,448 |
-| Uranus -> Neptune | 16d 6h | 37d 2h | 9,426 |
+| Route | Min Time | Max Time | Min dv | Max dv |
+|--------|-----------|-----------|---------|--------|
+| Mercury -> Venus | 2d 14h | 5d 16h | 665 | 1,450 |
+| Venus -> Earth | 2d 15h | 6d 21h | 670 | 1,752 |
+| Earth -> Mars | 3d 3h | 8d 13h | 800 | 2,173 |
+| Mercury -> Earth | 3d 18h | 6d 8h | 953 | 1,616 |
+| Venus -> Mars | 4d 5h | 8d 1h | 1,072 | 2,052 |
+| Mars -> Ceres | 4d 21h | 11d 6h | 1,248 | 2,858 |
+| Mercury -> Mars | 4d 23h | 7d 15h | 1,268 | 1,937 |
+| Earth -> Ceres | 6d 11h | 10d 10h | 1,643 | 2,651 |
+| Venus -> Ceres | 7d 1h | 10d 1h | 1,791 | 2,553 |
+| Ceres -> Jupiter | 7d 8h | 15d 3h | 1,863 | 3,852 |
+| Mercury -> Ceres | 7d 12h | 9d 16h | 1,915 | 2,462 |
+| Mars -> Jupiter | 9d 11h | 13d 22h | 2,404 | 3,540 |
+| Jupiter -> Saturn | 9d 21h | 20d 14h | 2,511 | 5,236 |
+| Earth -> Jupiter | 10d 8h | 13d 6h | 2,630 | 3,375 |
+| Venus -> Jupiter | 10d 17h | 12d 23h | 2,725 | 3,299 |
+| Mercury -> Jupiter | 11d 1h | 12d 17h | 2,808 | 3,228 |
+| Ceres -> Saturn | 12d 20h | 18d 21h | 3,266 | 4,801 |
+| Mars -> Saturn | 14d 4h | 17d 22h | 3,602 | 4,554 |
+| Earth -> Saturn | 14d 18h | 17d 10h | 3,757 | 4,427 |
+| Saturn -> Uranus | 14d 23h | 28d 16h | 3,810 | 7,288 |
+| Venus -> Saturn | 15d 1h | 17d 4h | 3,824 | 4,369 |
+| Mercury -> Saturn | 15d 6h | 16d 23h | 3,884 | 4,317 |
+| Uranus -> Neptune | 16d 6h | 37d 2h | 4,132 | 9,426 |
+| Jupiter -> Uranus | 18d 18h | 26d 9h | 4,767 | 6,701 |
+| Ceres -> Uranus | 20d 11h | 25d 1h | 5,205 | 6,367 |
+| Mars -> Uranus | 21d 8h | 24d 8h | 5,422 | 6,183 |
+| Earth -> Uranus | 21d 18h | 23d 23h | 5,526 | 6,090 |
+| Venus -> Uranus | 21d 22h | 23d 19h | 5,572 | 6,048 |
+| Mercury -> Uranus | 22d 2h | 23d 15h | 5,613 | 6,010 |
+| Saturn -> Neptune | 23d 3h | 33d 6h | 5,879 | 8,448 |
+| Jupiter -> Neptune | 25d 17h | 31d 6h | 6,540 | 7,947 |
+| Ceres -> Neptune | 27d 0h | 30d 4h | 6,865 | 7,668 |
+| Mars -> Neptune | 27d 16h | 29d 14h | 7,031 | 7,516 |
+| Earth -> Neptune | 27d 23h | 29d 6h | 7,112 | 7,439 |
+| Venus -> Neptune | 28d 3h | 29d 3h | 7,148 | 7,405 |
+| Mercury -> Neptune | 28d 6h | 29d 0h | 7,180 | 7,374 |

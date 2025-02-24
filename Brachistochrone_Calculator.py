@@ -55,7 +55,8 @@ class TravelMetrics:
     min_time: float  # days
     max_time: float  # days
     median_time: float  # days
-    delta_v: float  # km/s
+    min_delta_v: float  # km/s for minimum distance
+    max_delta_v: float  # km/s for maximum distance
 
 class BrachistochroneCalculator:
     """Handles calculations for brachistochrone trajectories between planets."""
@@ -95,9 +96,7 @@ class BrachistochroneCalculator:
 
     def calculate_metrics(self, origin: Planet, destination: Planet,
                          acceleration: float) -> TravelMetrics:
-        """Calculate complete travel metrics between two planets.
-        
-        Uses max_time for velocity calculations to get worst-case delta-v requirements."""
+        """Calculate complete travel metrics between two planets."""
         min_dist, max_dist = self.get_orbital_distances(origin, destination)
         min_dist_km = min_dist * self.constants.AU_TO_KM
         max_dist_km = max_dist * self.constants.AU_TO_KM
@@ -109,8 +108,8 @@ class BrachistochroneCalculator:
         median_time = self.calculate_brachistochrone_time(
             median_dist * self.constants.AU_TO_KM, acceleration)
         
+        min_velocity = self.calculate_max_velocity(min_time, acceleration)
         max_velocity = self.calculate_max_velocity(max_time, acceleration)
-        delta_v = self.calculate_total_deltav(max_velocity)
         
         return TravelMetrics(
             min_distance=min_dist,
@@ -118,7 +117,8 @@ class BrachistochroneCalculator:
             min_time=min_time / 86400,  # Convert to days
             max_time=max_time / 86400,
             median_time=median_time / 86400,
-            delta_v=delta_v
+            min_delta_v=self.calculate_total_deltav(min_velocity),
+            max_delta_v=self.calculate_total_deltav(max_velocity)
         )
 
 class DataFormatter:
@@ -139,11 +139,13 @@ class DataFormatter:
             round(metrics_1g.min_time, 3),
             round(metrics_1g.max_time, 3),
             round(metrics_1g.median_time, 3),
-            round(metrics_1g.delta_v, 2),
+            round(metrics_1g.min_delta_v, 2),
+            round(metrics_1g.max_delta_v, 2),
             round(metrics_03g.min_time, 3),
             round(metrics_03g.max_time, 3),
             round(metrics_03g.median_time, 3),
-            round(metrics_03g.delta_v, 2),
+            round(metrics_03g.min_delta_v, 2),
+            round(metrics_03g.max_delta_v, 2),
             origin.perihelion,
             origin.aphelion,
             destination.perihelion,
@@ -161,12 +163,13 @@ class DataFormatter:
         max_time = days_to_dhm(metrics.max_time)
         median_time = days_to_dhm(metrics.median_time)
         velocity = f"{max_velocity:,.0f}"
-        deltav = f"{metrics.delta_v:,.0f}"
+        min_delta_v = f"{metrics.min_delta_v:,.0f}"
+        max_delta_v = f"{metrics.max_delta_v:,.0f}"
         
-        return f"| {route} | {min_distance} | {max_distance} | {min_time} | {max_time} | {median_time} | {velocity} | {deltav} |"
+        return f"| {route} | {min_distance} | {max_distance} | {min_time} | {max_time} | {median_time} | {velocity} | {min_delta_v} | {max_delta_v} |"
 
 def save_to_markdown(data, base_filename='brachistochrone_03g'):
-    """Save 0.3g results to markdown file with timestamp, sorted by delta-v"""
+    """Save 0.3g results to markdown file with timestamp, sorted by min delta-v"""
     if not os.path.exists('exports'):
         os.makedirs('exports')
     
@@ -180,19 +183,20 @@ def save_to_markdown(data, base_filename='brachistochrone_03g'):
             'route': f"{row[0]} -> {row[1]}",
             'min_time': days_to_dhm(float(row[2])),
             'max_time': days_to_dhm(float(row[3])),
-            'delta_v': float(row[12]),  # max_deltav_kms_0_3g
+            'min_delta_v': float(row[12]),  # min_deltav_kms_0_3g
+            'max_delta_v': float(row[13])   # max_deltav_kms_0_3g
         })
     
-    # Sort by delta-v
-    formatted_data.sort(key=lambda x: x['delta_v'])
+    # Sort by minimum delta-v
+    formatted_data.sort(key=lambda x: x['min_delta_v'])
     
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding='utf-8') as f:  # Add UTF-8 encoding
         f.write("# Brachistochrone Travel Times (0.3g)\n\n")
-        f.write("| Route | Min Time | Max Time | Delta-v (km/s) |\n")
-        f.write("|--------|-----------|-----------|---------------|\n")
+        f.write("| Route | Min Time | Max Time | Min dv | Max dv |\n")  # Changed Δv to dv
+        f.write("|--------|-----------|-----------|---------|--------|\n")
         
         for row in formatted_data:
-            f.write(f"| {row['route']} | {row['min_time']} | {row['max_time']} | {row['delta_v']:,.0f} |\n")
+            f.write(f"| {row['route']} | {row['min_time']} | {row['max_time']} | {row['min_delta_v']:,.0f} | {row['max_delta_v']:,.0f} |\n")
     
     print(f"Markdown data saved to: {filename}")
 
@@ -213,7 +217,8 @@ def main():
         'min_time_days_1g', 'max_time_days_1g', 'median_time_days_1g',
         'min_distance_au', 'max_distance_au',
         'min_distance_km', 'max_distance_km',
-        'max_deltav_kms_0_3g', 'max_deltav_kms_1g',
+        'min_deltav_kms_0_3g', 'max_deltav_kms_0_3g',
+        'min_deltav_kms_1g', 'max_deltav_kms_1g',
         'origin_perihelion_au', 'origin_aphelion_au',
         'destination_perihelion_au', 'destination_aphelion_au'
     ]
@@ -238,8 +243,10 @@ def main():
                 round(metrics_1g.max_distance, 6),
                 round(metrics_1g.min_distance * Constants.AU_TO_KM, 0),
                 round(metrics_1g.max_distance * Constants.AU_TO_KM, 0),
-                round(metrics_03g.delta_v, 2),
-                round(metrics_1g.delta_v, 2),
+                round(metrics_03g.min_delta_v, 2),
+                round(metrics_03g.max_delta_v, 2),
+                round(metrics_1g.min_delta_v, 2),
+                round(metrics_1g.max_delta_v, 2),
                 PLANETS[name1].perihelion,
                 PLANETS[name1].aphelion,
                 PLANETS[name2].perihelion,
