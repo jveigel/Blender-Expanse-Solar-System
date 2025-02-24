@@ -1,0 +1,14 @@
+Efficiency Analysis for Nauvoo Drive
+
+Common Parameters
+Parameter,Value
+Total Thrust (MN),144.0
+Exhaust Velocity (c),0.080
+Dry Mass (tons),13500
+
+Efficiency Comparison
+Parameter,0.65% (Current),0.8% (Improved),20% (Theoretical)
+Mass Flow Kg S,6.0,6.0,6.0
+Fuel Mass Tons,40226.8,40226.8,40226.8
+Power Output W,1726804558080000.0,1726804558080000.0,1726804558080000.0
+Theoretical Power W,2113462107175491.5,2113462107175491.5,2113462107175491.5

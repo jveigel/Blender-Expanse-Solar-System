@@ -11,6 +11,7 @@ from itertools import combinations
 from typing import Dict, List, Tuple
 import csv
 import math
+import os
 
 def days_to_dhm(days: float) -> str:
     """Convert decimal days to days and hours string."""
@@ -164,6 +165,29 @@ class DataFormatter:
         
         return f"| {route} | {min_distance} | {max_distance} | {min_time} | {max_time} | {median_time} | {velocity} | {deltav} |"
 
+def save_to_markdown(data, base_filename='brachistochrone_03g'):
+    """Save 0.3g results to markdown file with timestamp"""
+    if not os.path.exists('exports'):
+        os.makedirs('exports')
+    
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f'exports/{base_filename}_{timestamp}.md'
+    
+    with open(filename, 'w') as f:
+        f.write("# Brachistochrone Travel Times (0.3g)\n\n")
+        f.write("| Route | Min Time | Max Time | Delta-v (km/s) |\n")
+        f.write("|--------|-----------|-----------|---------------|\n")
+        
+        for row in data:
+            route = f"{row[0]} -> {row[1]}"
+            min_time = days_to_dhm(float(row[2]))  # min_time_days_0_3g
+            max_time = days_to_dhm(float(row[3]))  # max_time_days_0_3g
+            delta_v = f"{float(row[12]):,.0f}"     # max_deltav_kms_0_3g
+            
+            f.write(f"| {route} | {min_time} | {max_time} | {delta_v} |\n")
+    
+    print(f"Markdown data saved to: {filename}")
+
 def main():
     """Main execution function."""
     calculator = BrachistochroneCalculator()
@@ -186,7 +210,7 @@ def main():
         'destination_perihelion_au', 'destination_aphelion_au'
     ]
     
-    # Generate routes in solar system order
+    # Generate routes in solar system order (remove Alpha Centauri section)
     for origin_idx, name1 in enumerate(planet_order):
         for name2 in planet_order[origin_idx + 1:]:
             metrics_1g = calculator.calculate_metrics(
@@ -215,35 +239,7 @@ def main():
             ]
             routes.append(row)
     
-    # Add Alpha Centauri routes from each planet
-    for origin in planet_order:
-        metrics_1g = calculator.calculate_metrics(
-            PLANETS[origin], PLANETS['Alpha Centauri'], Constants.G)
-        metrics_03g = calculator.calculate_metrics(
-            PLANETS[origin], PLANETS['Alpha Centauri'], Constants.G_0_3)
-        
-        row = [
-            origin, 'Alpha Centauri',
-            round(metrics_03g.min_time, 3),
-            round(metrics_03g.max_time, 3),
-            round(metrics_03g.median_time, 3),
-            round(metrics_1g.min_time, 3),
-            round(metrics_1g.max_time, 3),
-            round(metrics_1g.median_time, 3),
-            round(metrics_1g.min_distance, 6),
-            round(metrics_1g.max_distance, 6),
-            round(metrics_1g.min_distance * Constants.AU_TO_KM, 0),
-            round(metrics_1g.max_distance * Constants.AU_TO_KM, 0),
-            round(metrics_03g.delta_v, 2),
-            round(metrics_1g.delta_v, 2),
-            PLANETS[origin].perihelion,
-            PLANETS[origin].aphelion,
-            PLANETS['Alpha Centauri'].perihelion,
-            PLANETS['Alpha Centauri'].aphelion
-        ]
-        routes.append(row)
-    
-    # Write CSV output
+    # Write outputs
     csv_filename = f"exports/brachistochrone_extended_{timestamp}.csv"
     with open(csv_filename, 'w', newline='') as f:
         writer = csv.writer(f)
@@ -252,6 +248,7 @@ def main():
     
     print(f"CSV data saved to: {csv_filename}")
     print(f"Total routes calculated: {len(routes)}")
+    save_to_markdown(routes)
 
 if __name__ == "__main__":
     main()
