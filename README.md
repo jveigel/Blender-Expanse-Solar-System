@@ -1,9 +1,3 @@
-# Blender-Solar-System
-
-
-
-
-
 ## Scripts
 `Blender_Orbits_Jupiter.py`
 `Blender_Orbits_Saturn.py`
@@ -40,8 +34,6 @@ Attempts to estimate the interstellar travel times using the relativistic brachi
 | **Neptune** | 28d6h-29d0h | 28d3h-29d3h | 27d23h-29d6h | 27d16h-29d14h | 27d0h-30d4h | 25d17h-31d6h | 23d3h-33d6h | 16d6h-37d2h | - |
 
 ## Brachistochrone Travel Times (0.3g) - Sorted by Delta-v
-
-# Brachistochrone Travel Times (0.3g)
 
 | Route | Min Time | Max Time | Delta-v (km/s) |
 |--------|-----------|-----------|---------------|
