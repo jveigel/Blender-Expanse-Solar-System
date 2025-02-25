@@ -35,23 +35,7 @@ Attempts to estimate the interstellar travel times using the relativistic brachi
 | **Uranus** | 20d 23h-22d 10h | 20d 19h-22d 14h | 20d 15h-22d 17h | 20d 5h-23d 2h | 19d 10h-23d 18h | 17d 19h-25d 0h | 14d 5h-27d 5h | - | 15d 10h-35d 4h |
 | **Neptune** | 26d 19h-27d 12h | 26d 16h-27d 15h | 26d 13h-27d 18h | 26d 6h-28d 1h | 25d 15h-28d 15h | 24d 10h-29d 16h | 21d 22h-31d 13h | 15d 10h-35d 4h | - |
 
-## Brachistochrone Travel Times (0.3g)
-
-*Travel time ranges (min-max)*
-
-| From → To | Mercury | Venus | Earth | Mars | Ceres | Jupiter | Saturn | Uranus | Neptune |
-|-----------|---------|-------|-------|------|-------|---------|--------|--------|---------|
-| **Mercury** | - | 2d14h-5d16h | 3d18h-6d8h | 4d23h-7d15h | 7d12h-9d16h | 11d1h-12d17h | 15d6h-16d23h | 22d2h-23d15h | 28d6h-29d0h |
-| **Venus** | 2d14h-5d16h | - | 2d15h-6d21h | 4d5h-8d1h | 7d1h-10d1h | 10d17h-12d23h | 15d1h-17d4h | 21d22h-23d19h | 28d3h-29d3h |
-| **Earth** | 3d18h-6d8h | 2d15h-6d21h | - | 3d3h-8d13h | 6d11h-10d10h | 10d8h-13d6h | 14d18h-17d10h | 21d18h-23d23h | 27d23h-29d6h |
-| **Mars** | 4d23h-7d15h | 4d5h-8d1h | 3d3h-8d13h | - | 4d21h-11d6h | 9d11h-13d22h | 14d4h-17d22h | 21d8h-24d8h | 27d16h-29d14h |
-| **Ceres** | 7d12h-9d16h | 7d1h-10d1h | 6d11h-10d10h | 4d21h-11d6h | - | 7d8h-15d3h | 12d20h-18d21h | 20d11h-25d1h | 27d0h-30d4h |
-| **Jupiter** | 11d1h-12d17h | 10d17h-12d23h | 10d8h-13d6h | 9d11h-13d22h | 7d8h-15d3h | - | 9d21h-20d14h | 18d18h-26d9h | 25d17h-31d6h |
-| **Saturn** | 15d6h-16d23h | 15d1h-17d4h | 14d18h-17d10h | 14d4h-17d22h | 12d20h-18d21h | 9d21h-20d14h | - | 14d23h-28d16h | 23d3h-33d6h |
-| **Uranus** | 22d2h-23d15h | 21d22h-23d19h | 21d18h-23d23h | 21d8h-24d8h | 20d11h-25d1h | 18d18h-26d9h | 14d23h-28d16h | - | 16d6h-37d2h |
-| **Neptune** | 28d6h-29d0h | 28d3h-29d3h | 27d23h-29d6h | 27d16h-29d14h | 27d0h-30d4h | 25d17h-31d6h | 23d3h-33d6h | 16d6h-37d2h | - |
-
-# Brachistochrone Travel Times (1/3g)
+## Routes Sorted by Delta-V
 
 | Route | Min Time | Max Time | Min dv | Max dv |
 |--------|-----------|-----------|---------|--------|
