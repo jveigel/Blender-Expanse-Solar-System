@@ -25,24 +25,15 @@ Attempts to estimate the interstellar travel times using the relativistic brachi
 
 | From → To | Mercury | Venus | Earth | Mars | Ceres | Jupiter | Saturn | Uranus | Neptune |
 |-----------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| **Mercury** | - | 2d 11h-5d 9h | 3d 13h-6d 0h | 4d 17h-7d 5h | 7d 3h-9d 4h | 10d 11h-12d 1h | 14d 12h-16d 2h | 20d 
-23h-22d 10h | 26d 19h-27d 12h |
-| **Venus** | 2d 11h-5d 9h | - | 2d 12h-6d 13h | 4d 0h-7d 15h | 6d 16h-9d 12h | 10d 4h-12d 7h | 14d 6h-16d 7h | 20d 
-19h-22d 14h | 26d 16h-27d 15h |
-| **Earth** | 3d 13h-6d 0h | 2d 12h-6d 13h | - | 2d 23h-8d 2h | 6d 3h-9d 21h | 9d 19h-12d 14h | 14d 0h-16d 12h | 20d 
-15h-22d 17h | 26d 13h-27d 18h |
-| **Mars** | 4d 17h-7d 5h | 4d 0h-7d 15h | 2d 23h-8d 2h | - | 4d 15h-10d 16h | 8d 23h-13d 5h | 13d 10h-17d 0h | 20d 
-5h-23d 2h | 26d 6h-28d 1h |
-| **Ceres** | 7d 3h-9d 4h | 6d 16h-9d 12h | 6d 3h-9d 21h | 4d 15h-10d 16h | - | 6d 22h-14d 9h | 12d 4h-17d 22h | 19d 
-10h-23d 18h | 25d 15h-28d 15h |
-| **Jupiter** | 10d 11h-12d 1h | 10d 4h-12d 7h | 9d 19h-12d 14h | 8d 23h-13d 5h | 6d 22h-14d 9h | - | 9d 9h-19d 13h | 
-17d 19h-25d 0h | 24d 10h-29d 16h |
-| **Saturn** | 14d 12h-16d 2h | 14d 6h-16d 7h | 14d 0h-16d 12h | 13d 10h-17d 0h | 12d 4h-17d 22h | 9d 9h-19d 13h | - | 
-14d 5h-27d 5h | 21d 22h-31d 13h |
-| **Uranus** | 20d 23h-22d 10h | 20d 19h-22d 14h | 20d 15h-22d 17h | 20d 5h-23d 2h | 19d 10h-23d 18h | 17d 19h-25d 0h | 
-14d 5h-27d 5h | - | 15d 10h-35d 4h |
-| **Neptune** | 26d 19h-27d 12h | 26d 16h-27d 15h | 26d 13h-27d 18h | 26d 6h-28d 1h | 25d 15h-28d 15h | 24d 10h-29d 
-16h | 21d 22h-31d 13h | 15d 10h-35d 4h | - |
+| **Mercury** | - | 2d 11h-5d 9h | 3d 13h-6d 0h | 4d 17h-7d 5h | 7d 3h-9d 4h | 10d 11h-12d 1h | 14d 12h-16d 2h | 20d 23h-22d 10h | 26d 19h-27d 12h |
+| **Venus** | 2d 11h-5d 9h | - | 2d 12h-6d 13h | 4d 0h-7d 15h | 6d 16h-9d 12h | 10d 4h-12d 7h | 14d 6h-16d 7h | 20d 19h-22d 14h | 26d 16h-27d 15h |
+| **Earth** | 3d 13h-6d 0h | 2d 12h-6d 13h | - | 2d 23h-8d 2h | 6d 3h-9d 21h | 9d 19h-12d 14h | 14d 0h-16d 12h | 20d 15h-22d 17h | 26d 13h-27d 18h |
+| **Mars** | 4d 17h-7d 5h | 4d 0h-7d 15h | 2d 23h-8d 2h | - | 4d 15h-10d 16h | 8d 23h-13d 5h | 13d 10h-17d 0h | 20d 5h-23d 2h | 26d 6h-28d 1h |
+| **Ceres** | 7d 3h-9d 4h | 6d 16h-9d 12h | 6d 3h-9d 21h | 4d 15h-10d 16h | - | 6d 22h-14d 9h | 12d 4h-17d 22h | 19d 10h-23d 18h | 25d 15h-28d 15h |
+| **Jupiter** | 10d 11h-12d 1h | 10d 4h-12d 7h | 9d 19h-12d 14h | 8d 23h-13d 5h | 6d 22h-14d 9h | - | 9d 9h-19d 13h | 17d 19h-25d 0h | 24d 10h-29d 16h |
+| **Saturn** | 14d 12h-16d 2h | 14d 6h-16d 7h | 14d 0h-16d 12h | 13d 10h-17d 0h | 12d 4h-17d 22h | 9d 9h-19d 13h | - | 14d 5h-27d 5h | 21d 22h-31d 13h |
+| **Uranus** | 20d 23h-22d 10h | 20d 19h-22d 14h | 20d 15h-22d 17h | 20d 5h-23d 2h | 19d 10h-23d 18h | 17d 19h-25d 0h | 14d 5h-27d 5h | - | 15d 10h-35d 4h |
+| **Neptune** | 26d 19h-27d 12h | 26d 16h-27d 15h | 26d 13h-27d 18h | 26d 6h-28d 1h | 25d 15h-28d 15h | 24d 10h-29d 16h | 21d 22h-31d 13h | 15d 10h-35d 4h | - |
 
 ## Brachistochrone Travel Times (0.3g)
 
