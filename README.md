@@ -19,7 +19,7 @@ Attempts to estimate the interstellar travel times using the relativistic brachi
 
 ## Brachistochrone Travel Times (1/3g)
 
-## Travel Time Matrix
+### Travel Time Matrix
 
 *Travel time ranges (min-max)*
 
@@ -35,7 +35,7 @@ Attempts to estimate the interstellar travel times using the relativistic brachi
 | **Uranus** | 20d 23h-22d 10h | 20d 19h-22d 14h | 20d 15h-22d 17h | 20d 5h-23d 2h | 19d 10h-23d 18h | 17d 19h-25d 0h | 14d 5h-27d 5h | - | 15d 10h-35d 4h |
 | **Neptune** | 26d 19h-27d 12h | 26d 16h-27d 15h | 26d 13h-27d 18h | 26d 6h-28d 1h | 25d 15h-28d 15h | 24d 10h-29d 16h | 21d 22h-31d 13h | 15d 10h-35d 4h | - |
 
-## Routes Sorted by Delta-V
+### Routes Sorted by Delta-V
 
 | Route | Min Time | Max Time | Min dv | Max dv |
 |--------|-----------|-----------|---------|--------|

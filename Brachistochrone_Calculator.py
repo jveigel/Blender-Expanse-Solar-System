@@ -241,12 +241,12 @@ def save_to_markdown(data, base_filename='brachistochrone_1_3g'):
         f.write("## Brachistochrone Travel Times (1/3g)\n\n")
         
         # Add travel time matrix
-        f.write("## Travel Time Matrix\n\n")
+        f.write("### Travel Time Matrix\n\n")
         f.write(generate_travel_matrix(data, planet_order))
         f.write("\n\n")
         
         # Add sorted routes by delta-v
-        f.write("## Routes Sorted by Delta-V\n\n")
+        f.write("### Routes Sorted by Delta-V\n\n")
         f.write("| Route | Min Time | Max Time | Min dv | Max dv |\n")  # Changed Δv to dv
         f.write("|--------|-----------|-----------|---------|--------|\n")
         
