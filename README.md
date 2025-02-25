@@ -3,13 +3,11 @@
     Blender_Orbits_Saturn.py
     Blender_Orbits_SolarSystem.py
 
-Python scripts to create accurate orbits in Blender.
-
+Python scripts to create accurate orbits in Blender.<br><br>
 
     SolarSystemScale8k_Accurate.py
 
-Creates an image file of scale accurate orbits at about 10,000 px.
-
+Creates an image file of scale accurate orbits at about 10,000 px.<br><br>
 
     BrachistochroneCalc.py
 
