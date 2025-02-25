@@ -1,21 +1,19 @@
 ## Scripts
     Blender_Orbits_Jupiter.py
->
-> `Blender_Orbits_Saturn.py`
->
-> `Blender_Orbits_SolarSystem.py`
+    Blender_Orbits_Saturn.py
+    Blender_Orbits_SolarSystem.py
 
 Python scripts to create accurate orbits in Blender.
 
-> `SolarSystemScale8k_Accurate.py`
+    SolarSystemScale8k_Accurate.py
 
 Creates an image file of scale accurate orbits at about 10,000 px.
 
-> `BrachistochroneCalc.py`
+    BrachistochroneCalc.py
 
 Saves a csv and markdown file with the results of the brachistochrone trajectories at 1g and 0.3g.
 
-> `Brachistochrone_Relativistic_Calculator_Epstein.py`
+    Brachistochrone_Relativistic_Calculator_Epstein.py
 
 Attempts to estimate the interstellar travel times using the relativistic brachistochrone equation for the Nauvoo from the Expanse. It is not very accurate, canonically or scientifically.
 
