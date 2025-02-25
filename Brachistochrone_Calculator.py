@@ -25,7 +25,7 @@ def days_to_dhm(days: float) -> str:
 class Constants:
     G_MULTIPLIER: float = 0.0098  # km/s² per g
     G: float = 0.0098  # km/s² (1g acceleration)
-    G_0_3: float = 0.00294  # km/s² (0.3g acceleration)
+    G_1_3: float = 0.00326667  # km/s² (1/3g acceleration)
     AU_TO_KM: float = 1.496e8  # kilometers per AU
     C: float = 299792.458  # Speed of light in km/s
 
@@ -126,7 +126,7 @@ class DataFormatter:
     
     @staticmethod
     def generate_csv_row(origin_name: str, dest_name: str, 
-                        metrics_1g: TravelMetrics, metrics_03g: TravelMetrics,
+                        metrics_1g: TravelMetrics, metrics_1_3g: TravelMetrics,
                         origin: Planet, destination: Planet) -> List:
         """Generate a single CSV row."""
         return [
@@ -141,11 +141,11 @@ class DataFormatter:
             round(metrics_1g.median_time, 3),
             round(metrics_1g.min_delta_v, 2),
             round(metrics_1g.max_delta_v, 2),
-            round(metrics_03g.min_time, 3),
-            round(metrics_03g.max_time, 3),
-            round(metrics_03g.median_time, 3),
-            round(metrics_03g.min_delta_v, 2),
-            round(metrics_03g.max_delta_v, 2),
+            round(metrics_1_3g.min_time, 3),
+            round(metrics_1_3g.max_time, 3),
+            round(metrics_1_3g.median_time, 3),
+            round(metrics_1_3g.min_delta_v, 2),
+            round(metrics_1_3g.max_delta_v, 2),
             origin.perihelion,
             origin.aphelion,
             destination.perihelion,
@@ -168,13 +168,60 @@ class DataFormatter:
         
         return f"| {route} | {min_distance} | {max_distance} | {min_time} | {max_time} | {median_time} | {velocity} | {min_delta_v} | {max_delta_v} |"
 
-def save_to_markdown(data, base_filename='brachistochrone_03g'):
-    """Save 0.3g results to markdown file with timestamp, sorted by min delta-v"""
+def generate_travel_matrix(all_routes, planet_order):
+    """Generate a travel time matrix for markdown output."""
+    # Create a dictionary to store min/max travel times between planets
+    travel_times = {}
+    
+    # Process each route
+    for row in all_routes:
+        origin = row[0]
+        destination = row[1]
+        min_time = days_to_dhm(float(row[2]))  # min_time_days_1_3g
+        max_time = days_to_dhm(float(row[3]))  # max_time_days_1_3g
+        
+        # Store in dictionary (in both directions)
+        key = f"{origin}_{destination}"
+        travel_times[key] = f"{min_time}-{max_time}"
+    
+    # Generate the matrix header
+    matrix = "*Travel time ranges (min-max)*\n\n"
+    matrix += "| From → To | " + " | ".join(planet_order) + " |\n"
+    matrix += "|-----------|" + "---------|" * len(planet_order) + "\n"
+    
+    # Generate each row of the matrix
+    for origin in planet_order:
+        row = f"| **{origin}** |"
+        
+        for destination in planet_order:
+            if origin == destination:
+                row += " - |"
+            else:
+                key = f"{origin}_{destination}"
+                rev_key = f"{destination}_{origin}"
+                
+                # Use the key if it exists, otherwise use reverse key
+                if key in travel_times:
+                    row += f" {travel_times[key]} |"
+                elif rev_key in travel_times:
+                    row += f" {travel_times[rev_key]} |"
+                else:
+                    row += " - |"
+        
+        matrix += row + "\n"
+    
+    return matrix
+
+def save_to_markdown(data, base_filename='brachistochrone_1_3g'):
+    """Save 1/3g results to markdown file with timestamp, sorted by min delta-v"""
     if not os.path.exists('exports'):
         os.makedirs('exports')
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f'exports/{base_filename}_{timestamp}.md'
+    
+    # Define planet order for matrix
+    planet_order = ['Mercury', 'Venus', 'Earth', 'Mars', 'Ceres', 'Jupiter', 'Saturn', 'Uranus', 'Neptune']
     
     # Convert data to list of dictionaries for sorting
     formatted_data = []
@@ -183,15 +230,23 @@ def save_to_markdown(data, base_filename='brachistochrone_03g'):
             'route': f"{row[0]} -> {row[1]}",
             'min_time': days_to_dhm(float(row[2])),
             'max_time': days_to_dhm(float(row[3])),
-            'min_delta_v': float(row[12]),  # min_deltav_kms_0_3g
-            'max_delta_v': float(row[13])   # max_deltav_kms_0_3g
+            'min_delta_v': float(row[12]),  # min_deltav_kms_1_3g
+            'max_delta_v': float(row[13])   # max_deltav_kms_1_3g
         })
     
     # Sort by minimum delta-v
     formatted_data.sort(key=lambda x: x['min_delta_v'])
     
     with open(filename, 'w', encoding='utf-8') as f:  # Add UTF-8 encoding
-        f.write("# Brachistochrone Travel Times (0.3g)\n\n")
+        f.write("## Brachistochrone Travel Times (1/3g)\n\n")
+        
+        # Add travel time matrix
+        f.write("## Travel Time Matrix\n\n")
+        f.write(generate_travel_matrix(data, planet_order))
+        f.write("\n\n")
+        
+        # Add sorted routes by delta-v
+        f.write("## Routes Sorted by Delta-V\n\n")
         f.write("| Route | Min Time | Max Time | Min dv | Max dv |\n")  # Changed Δv to dv
         f.write("|--------|-----------|-----------|---------|--------|\n")
         
@@ -213,11 +268,11 @@ def main():
     routes = []
     headers = [
         'origin_planet', 'destination_planet',
-        'min_time_days_0_3g', 'max_time_days_0_3g', 'median_time_days_0_3g',
+        'min_time_days_1_3g', 'max_time_days_1_3g', 'median_time_days_1_3g',
         'min_time_days_1g', 'max_time_days_1g', 'median_time_days_1g',
         'min_distance_au', 'max_distance_au',
         'min_distance_km', 'max_distance_km',
-        'min_deltav_kms_0_3g', 'max_deltav_kms_0_3g',
+        'min_deltav_kms_1_3g', 'max_deltav_kms_1_3g',
         'min_deltav_kms_1g', 'max_deltav_kms_1g',
         'origin_perihelion_au', 'origin_aphelion_au',
         'destination_perihelion_au', 'destination_aphelion_au'
@@ -228,14 +283,14 @@ def main():
         for name2 in planet_order[origin_idx + 1:]:
             metrics_1g = calculator.calculate_metrics(
                 PLANETS[name1], PLANETS[name2], Constants.G)
-            metrics_03g = calculator.calculate_metrics(
-                PLANETS[name1], PLANETS[name2], Constants.G_0_3)
+            metrics_1_3g = calculator.calculate_metrics(
+                PLANETS[name1], PLANETS[name2], Constants.G_1_3)
             
             row = [
                 name1, name2,
-                round(metrics_03g.min_time, 3),
-                round(metrics_03g.max_time, 3),
-                round(metrics_03g.median_time, 3),
+                round(metrics_1_3g.min_time, 3),
+                round(metrics_1_3g.max_time, 3),
+                round(metrics_1_3g.median_time, 3),
                 round(metrics_1g.min_time, 3),
                 round(metrics_1g.max_time, 3),
                 round(metrics_1g.median_time, 3),
@@ -243,8 +298,8 @@ def main():
                 round(metrics_1g.max_distance, 6),
                 round(metrics_1g.min_distance * Constants.AU_TO_KM, 0),
                 round(metrics_1g.max_distance * Constants.AU_TO_KM, 0),
-                round(metrics_03g.min_delta_v, 2),
-                round(metrics_03g.max_delta_v, 2),
+                round(metrics_1_3g.min_delta_v, 2),
+                round(metrics_1_3g.max_delta_v, 2),
                 round(metrics_1g.min_delta_v, 2),
                 round(metrics_1g.max_delta_v, 2),
                 PLANETS[name1].perihelion,
