@@ -2,11 +2,11 @@
 
 ## Scripts
 
-Saves a csv and markdown file with the results of the brachistochrone trajectories at 1/3g. Python version outputs to .csv and .md, and the .jsx is a React component version. Hosted on https://overvieweffekt.com/expanse-calculators.
+ Python version aves a csv and markdown file with the results of the brachistochrone trajectories at 1/3g (example below.) The .jsx is a React component version. Hosted on https://overvieweffekt.com/expanse-calculators.
 * `BrachistochroneCalculator.py`
 * `BrachistochroneCalculator.jsx`
 
-Attempts to estimate the interstellar travel times using the relativistic brachistochrone equation for the Nauvoo from the Expanse. I'm not sure how accurate it is: Python version outputs to .csv and .md (example below), and the .jsx is a React component version.
+Attempts to estimate the interstellar travel times using a relativistic brachistochrone equation for the Nauvoo from the Expanse. I'm not sure how accurate it is. Python version outputs to .csv and .md, and the .jsx is a React component version.
 * `EpsteinDriveCalculator.py`
 * `EpsteinDriveCalculator.jsx`
 
