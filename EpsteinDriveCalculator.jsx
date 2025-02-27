@@ -27,6 +27,8 @@ const NAUVOO_SPECS = {
   star: STAR_SYSTEMS[0] // Tau Ceti
 };
 
+const VERSION = "v0.1";
+
 const EpsteinDriveCalculator = () => {
   // Ship parameters
   const [dryMass, setDryMass] = useState(NAUVOO_SPECS.dryMass);
@@ -205,24 +207,26 @@ const EpsteinDriveCalculator = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Relativistic Epstein Calculator</h1>
+    <div className="max-w-4xl mx-auto p-6 bg-zinc-900 border border-zinc-800 rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-6 text-zinc-100">
+        Epstein Drive Interstellar Calculator <span className="text-base font-normal text-sky-400">{VERSION}</span>
+      </h2>
       
       <div className="grid md:grid-cols-2 gap-6">
         {/* Input Controls */}
-        <div className="bg-white p-4 rounded-lg shadow">
+        <div className="bg-zinc-800 p-4 rounded-lg shadow border border-zinc-700">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-700">Ship Parameters</h2>
+            <h2 className="text-xl font-semibold text-zinc-200">Ship Parameters</h2>
             <button 
               onClick={resetToNauvooSpecs}
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
               Reset to Nauvoo Specs
             </button>
           </div>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-zinc-300 mb-1">
               Dry Mass: {formatNumber(dryMassTons)} tons ({formatNumber(dryMassKilotons, 2)} kilotons)
             </label>
             <input
@@ -232,16 +236,16 @@ const EpsteinDriveCalculator = () => {
               step={1000000}
               value={dryMass}
               onChange={(e) => setDryMass(Number(e.target.value))}
-              className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
             />
           </div>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-zinc-300 mb-1">
               Total Thrust: {formatNumber(thrustMN)} MN
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">1 MN</span>
+              <span className="text-xs text-zinc-500">1 MN</span>
               <input
                 type="range"
                 min={1000000}
@@ -249,17 +253,17 @@ const EpsteinDriveCalculator = () => {
                 step={1000000}
                 value={thrust}
                 onChange={(e) => setThrust(Number(e.target.value))}
-                className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
               />
-              <span className="text-xs text-gray-500">1,000 MN</span>
+              <span className="text-xs text-zinc-500">1,000 MN</span>
             </div>
-            <div className="mt-1 text-xs text-gray-500">
+            <div className="mt-1 text-xs text-zinc-500">
               (For reference: Saturn V ~35 MN, Falcon Heavy ~22 MN)
             </div>
           </div>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-zinc-300 mb-1">
               Exhaust Velocity: {formatNumber(exhaustVelocityC * 100, 2)}% c
             </label>
             <input
@@ -269,43 +273,43 @@ const EpsteinDriveCalculator = () => {
               step={0.01 * C}
               value={exhaustVelocity}
               onChange={(e) => setExhaustVelocity(Number(e.target.value))}
-              className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
             />
           </div>
           
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-zinc-300 mb-1">
               Flight Profile
             </label>
             <div className="flex space-x-4">
               <label className="inline-flex items-center">
                 <input
                   type="radio"
-                  className="form-radio h-4 w-4 text-blue-600"
+                  className="form-radio h-4 w-4 text-sky-600 bg-zinc-700 border-zinc-600"
                   checked={flightProfile === 'standard'}
                   onChange={() => setFlightProfile('standard')}
                 />
-                <span className="ml-2 text-gray-700">Standard (Accel → Coast → Decel)</span>
+                <span className="ml-2 text-zinc-300">Standard (Accel → Coast → Decel)</span>
               </label>
               <label className="inline-flex items-center">
                 <input
                   type="radio"
-                  className="form-radio h-4 w-4 text-blue-600"
+                  className="form-radio h-4 w-4 text-sky-600 bg-zinc-700 border-zinc-600"
                   checked={flightProfile === 'brachistochrone'}
                   onChange={() => setFlightProfile('brachistochrone')}
                 />
-                <span className="ml-2 text-gray-700">Brachistochrone (Continuous Accel/Decel)</span>
+                <span className="ml-2 text-zinc-300">Brachistochrone</span>
               </label>
             </div>
           </div>
           
           {flightProfile === 'standard' && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <span className="font-bold">Maximum Cruise Velocity:</span> {formatNumber(maxVelocityC * 100, 2)}% of light speed
+              <label className="block text-sm font-medium text-zinc-300 mb-1">
+                Maximum Cruise Velocity: {formatNumber(maxVelocityC * 100, 2)}% of light speed
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">1%</span>
+                <span className="text-xs text-zinc-500">1%</span>
                 <input
                   type="range"
                   min={0.01 * C}
@@ -313,24 +317,21 @@ const EpsteinDriveCalculator = () => {
                   step={0.05 * C}
                   value={maxVelocity}
                   onChange={(e) => setMaxVelocity(Number(e.target.value))}
-                  className="w-full h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                  className="w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
                 />
-                <span className="text-xs text-gray-500">95%</span>
-              </div>
-              <div className="mt-1 text-xs text-blue-600 italic">
-                ↑ Adjust this slider to see how different cruise velocities affect journey time and fuel requirements
+                <span className="text-xs text-zinc-500">95%</span>
               </div>
             </div>
           )}
           
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-zinc-300 mb-1">
               Destination
             </label>
             <select
               value={selectedStar.name}
               onChange={(e) => setSelectedStar(STAR_SYSTEMS.find(s => s.name === e.target.value))}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full px-3 py-2 bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
             >
               {STAR_SYSTEMS.map(star => (
                 <option key={star.name} value={star.name}>
@@ -342,92 +343,92 @@ const EpsteinDriveCalculator = () => {
         </div>
         
         {/* Results Display */}
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">Journey Results</h2>
+        <div className="bg-zinc-800 p-4 rounded-lg shadow border border-zinc-700">
+          <h2 className="text-xl font-semibold mb-4 text-zinc-200">Journey Results</h2>
           
           {results && (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h3 className="text-sm font-medium text-gray-500">Time Passed on Earth</h3>
-                  <p className="text-xl font-bold text-blue-700">{formatNumber(results.earthTime)} years</p>
+                <div className="bg-zinc-700 p-3 rounded-lg">
+                  <h3 className="text-sm font-medium text-zinc-400">Earth Time</h3>
+                  <p className="text-xl font-bold text-sky-400">{formatNumber(results.earthTime)} years</p>
                 </div>
                 
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <h3 className="text-sm font-medium text-gray-500">Time Passed on Ship</h3>
-                  <p className="text-xl font-bold text-blue-700">{formatNumber(results.shipTime)} years</p>
+                <div className="bg-zinc-700 p-3 rounded-lg">
+                  <h3 className="text-sm font-medium text-zinc-400">Ship Time</h3>
+                  <p className="text-xl font-bold text-sky-400">{formatNumber(results.shipTime)} years</p>
                 </div>
               </div>
               
-              <div className="border-t pt-3">
-                <h3 className="font-medium text-gray-700 mb-2">Performance Details</h3>
+              <div className="border-t border-zinc-700 pt-3">
+                <h3 className="font-medium text-zinc-300 mb-2">Performance Details</h3>
                 <ul className="space-y-1 text-sm">
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Acceleration:</span>
-                    <span className="font-medium">{formatNumber(results.acceleration, 2)} g</span>
+                    <span className="text-zinc-400">Acceleration:</span>
+                    <span className="font-medium text-zinc-200">{formatNumber(results.acceleration, 2)} g</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Flight Profile:</span>
-                    <span className="font-medium">
+                    <span className="text-zinc-400">Flight Profile:</span>
+                    <span className="font-medium text-zinc-200">
                       {results.flightProfile === 'standard' ? 'Standard' : 'Brachistochrone'}
                     </span>
                   </li>
                   {results.flightProfile === 'standard' ? (
                     <>
                       <li className="flex justify-between">
-                        <span className="text-gray-600">Acceleration Phase:</span>
-                        <span className="font-medium">{formatNumber(results.accelerationTime)} days</span>
+                        <span className="text-zinc-400">Acceleration Phase:</span>
+                        <span className="font-medium text-zinc-200">{formatNumber(results.accelerationTime)} days</span>
                       </li>
                       <li className="flex justify-between">
-                        <span className="text-gray-600">Coast Phase:</span>
-                        <span className="font-medium">{formatNumber(results.coastTime)} years</span>
+                        <span className="text-zinc-400">Coast Phase:</span>
+                        <span className="font-medium text-zinc-200">{formatNumber(results.coastTime)} years</span>
                       </li>
                     </>
                   ) : (
                     <li className="flex justify-between">
-                      <span className="text-gray-600">Acceleration Phase:</span>
-                      <span className="font-medium">{formatNumber(results.accelerationTime)} days (half journey)</span>
+                      <span className="text-zinc-400">Acceleration Phase:</span>
+                      <span className="font-medium text-zinc-200">{formatNumber(results.accelerationTime)} days (half journey)</span>
                     </li>
                   )}
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Time Dilation Factor:</span>
-                    <span className="font-medium">{results.gamma.toFixed(3)}</span>
+                    <span className="text-zinc-400">Time Dilation Factor:</span>
+                    <span className="font-medium text-zinc-200">{results.gamma.toFixed(3)}</span>
                   </li>
                 </ul>
               </div>
               
-              <div className="border-t pt-3">
-                <h3 className="font-medium text-gray-700 mb-2">Fuel Requirements</h3>
+              <div className="border-t border-zinc-700 pt-3">
+                <h3 className="font-medium text-zinc-300 mb-2">Fuel Requirements</h3>
                 <ul className="space-y-1 text-sm">
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Fuel Mass:</span>
-                    <span className="font-medium">{formatNumber(results.fuelMass)} tons</span>
+                    <span className="text-zinc-400">Fuel Mass:</span>
+                    <span className="font-medium text-zinc-200">{formatNumber(results.fuelMass)} tons</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Mass Ratio:</span>
-                    <span className="font-medium">{results.massRatio.toFixed(2)}</span>
+                    <span className="text-zinc-400">Mass Ratio:</span>
+                    <span className="font-medium text-zinc-200">{results.massRatio.toFixed(2)}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Mass Flow Rate:</span>
-                    <span className="font-medium">{formatNumber(results.massFlowRate, 1)} kg/s</span>
+                    <span className="text-zinc-400">Mass Flow Rate:</span>
+                    <span className="font-medium text-zinc-200">{formatNumber(results.massFlowRate, 1)} kg/s</span>
                   </li>
                 </ul>
               </div>
               
-              <div className="border-t pt-3">
-                <h3 className="font-medium text-gray-700 mb-2">Power Systems</h3>
+              <div className="border-t border-zinc-700 pt-3">
+                <h3 className="font-medium text-zinc-300 mb-2">Power Systems</h3>
                 <ul className="space-y-1 text-sm">
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Power Output:</span>
-                    <span className="font-medium">{formatPower(results.powerOutput)}</span>
+                    <span className="text-zinc-400">Power Output:</span>
+                    <span className="font-medium text-zinc-200">{formatPower(results.powerOutput)}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Theoretical Power:</span>
-                    <span className="font-medium">{formatPower(results.theoreticalPower)}</span>
+                    <span className="text-zinc-400">Theoretical Power:</span>
+                    <span className="font-medium text-zinc-200">{formatPower(results.theoreticalPower)}</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Drive Efficiency:</span>
-                    <span className="font-medium">{formatNumber(results.efficiency, 3)}%</span>
+                    <span className="text-zinc-400">Drive Efficiency:</span>
+                    <span className="font-medium text-zinc-200">{formatNumber(results.efficiency, 3)}%</span>
                   </li>
                 </ul>
               </div>
@@ -436,7 +437,7 @@ const EpsteinDriveCalculator = () => {
         </div>
       </div>
       
-      <div className="mt-6 text-sm text-gray-500">
+      <div className="mt-6 text-sm text-zinc-400">
         <p>Based on the Epstein Drive from The Expanse universe. Uses relativistic calculations for high-velocity travel.</p>
         <p className="mt-1"><strong>Note:</strong> The original Nauvoo specifications target 11.9% of light speed for a 100-year journey to Tau Ceti. At very high velocities (>80% of light speed), relativistic effects become extreme. With very low thrust values, travel times may become impractically long for interstellar journeys.</p>
       </div>
