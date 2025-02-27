@@ -15,9 +15,9 @@ Are scripts that attempt to estimate the interstellar travel times using a relat
 
 ***
 
-### `Blender_Orbits_Jupiter.py`
-### `Blender_Orbits_Saturn.py`
-### `Blender_Orbits_SolarSystem.py`
+`Blender_Orbits_Jupiter.py`
+`Blender_Orbits_Saturn.py`
+`Blender_Orbits_SolarSystem.py`
 
  Python scripts to create accurate orbits in Blender.
 
@@ -26,6 +26,8 @@ Are scripts that attempt to estimate the interstellar travel times using a relat
 ### `SolarSystemScale8k_Accurate.py`
 
 Creates an image file of scale accurate orbits at about 10,000 px.
+
+***
 
 ## Brachistochrone Travel Times (1/3g)
 
