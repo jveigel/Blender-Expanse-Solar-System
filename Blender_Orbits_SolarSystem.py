@@ -1,7 +1,12 @@
-import bpy # type: ignore
+import bpy  # type: ignore
 import math
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector  # type: ignore
+from typing import Dict, List, Tuple, Any, Optional
+import time
+
+# Start timing
+start_time = time.time()
 
 # Clear existing objects
 bpy.ops.object.select_all(action='SELECT')
@@ -34,16 +39,38 @@ planet_pairs = [
     ('Neptune', 'Uranus')
 ]
 
+# Configuration
 NUM_POINTS = 500  # Balance between accuracy and speed
+CURVE_RESOLUTION = 100  # Number of points for orbit visualization
 
-def calculate_point_on_orbit(data, true_anomaly):
-    """Calculate 3D position at a given true anomaly."""
+# Cache for orbital points to avoid recalculation
+orbital_points_cache: Dict[str, List[Vector]] = {}
+
+def precompute_trig_values(data: Dict[str, float]) -> Dict[str, float]:
+    """Precompute trigonometric values for orbital calculations."""
+    inc_rad = math.radians(data['inc'])
+    node_rad = math.radians(data['node'])
+    peri_rad = math.radians(data['peri'])
+    
+    return {
+        'a': data['a'],
+        'e': data['e'],
+        'cos_inc': math.cos(inc_rad),
+        'sin_inc': math.sin(inc_rad),
+        'cos_node': math.cos(node_rad),
+        'sin_node': math.sin(node_rad),
+        'cos_peri': math.cos(peri_rad),
+        'sin_peri': math.sin(peri_rad)
+    }
+
+# Precompute trigonometric values for all planets
+precomputed_planet_data = {name: precompute_trig_values(data) for name, data in planets.items()}
+
+def calculate_point_on_orbit(data: Dict[str, float], true_anomaly: float) -> Vector:
+    """Calculate 3D position at a given true anomaly using precomputed values."""
     # Get orbital parameters
     a = data['a']
     e = data['e']
-    inc = math.radians(data['inc'])
-    node = math.radians(data['node'])
-    peri = math.radians(data['peri'])
     
     # Calculate radius using polar form of ellipse
     r = a * (1 - e**2) / (1 + e * math.cos(true_anomaly))
@@ -51,29 +78,39 @@ def calculate_point_on_orbit(data, true_anomaly):
     # Initial position in orbital plane
     x = r * math.cos(true_anomaly)
     y = r * math.sin(true_anomaly)
-    z = 0
     
-    # Apply rotations in correct order: peri → inc → node
+    # Apply rotations using precomputed values
     # 1. Rotate by perihelion
-    x_peri = x * math.cos(peri) - y * math.sin(peri)
-    y_peri = x * math.sin(peri) + y * math.cos(peri)
-    z_peri = z
+    x_peri = x * data['cos_peri'] - y * data['sin_peri']
+    y_peri = x * data['sin_peri'] + y * data['cos_peri']
     
     # 2. Rotate by inclination
-    y_inc = y_peri * math.cos(inc) - z_peri * math.sin(inc)
-    z_inc = y_peri * math.sin(inc) + z_peri * math.cos(inc)
+    y_inc = y_peri * data['cos_inc']
+    z_inc = y_peri * data['sin_inc']
     
     # 3. Rotate by node
-    x_final = x_peri * math.cos(node) - y_inc * math.sin(node)
-    y_final = x_peri * math.sin(node) + y_inc * math.cos(node)
-    z_final = z_inc
+    x_final = x_peri * data['cos_node'] - y_inc * data['sin_node']
+    y_final = x_peri * data['sin_node'] + y_inc * data['cos_node']
     
-    return Vector((x_final, y_final, z_final))
+    return Vector((x_final, y_final, z_inc))
+
+def get_orbital_points(planet_name: str, num_points: int = NUM_POINTS) -> List[Vector]:
+    """Get or calculate orbital points with caching."""
+    cache_key = f"{planet_name}_{num_points}"
+    
+    if cache_key in orbital_points_cache:
+        return orbital_points_cache[cache_key]
+    
+    theta_values = np.linspace(0, 2*np.pi, num_points)
+    points = [calculate_point_on_orbit(precomputed_planet_data[planet_name], t) for t in theta_values]
+    
+    # Cache the result
+    orbital_points_cache[cache_key] = points
+    return points
 
 # Create collections for organization
-def setup_collections():
+def setup_collections() -> Tuple[Any, Any]:
     """Set up the collections structure."""
-    # Get scene collection
     scene_collection = bpy.context.scene.collection
     
     # Create Orbits collection if it doesn't exist
@@ -95,7 +132,7 @@ def setup_collections():
 # Set up the collections
 orbits_collection, distances_collection = setup_collections()
 
-def create_orbital_curve(planet_name, data, index, parent_object):
+def create_orbital_curve(planet_name: str, data: Dict[str, float], index: int, parent_object: Any) -> Any:
     """Create a Blender curve object for the orbit."""
     # Create the curve
     curve_data = bpy.data.curves.new(name=f"{index}.{planet_name}.Orbit", type='CURVE')
@@ -112,14 +149,13 @@ def create_orbital_curve(planet_name, data, index, parent_object):
     # Create the orbital path
     spline = curve_data.splines.new('NURBS')
     
-    # Calculate points along the orbit
-    theta = np.linspace(0, 2*np.pi, 100)
-    
-    # Calculate points
-    points = []
-    for t in theta:
-        point = calculate_point_on_orbit(data, t)
-        points.append(point)
+    # Get points (use cached if available)
+    if planet_name in planets:
+        points = get_orbital_points(planet_name, CURVE_RESOLUTION)
+    else:
+        # For reference orbit or other special cases
+        theta = np.linspace(0, 2*np.pi, CURVE_RESOLUTION)
+        points = [calculate_point_on_orbit(precompute_trig_values(data), t) for t in theta]
     
     # Set the points in the spline
     spline.points.add(len(points)-1)
@@ -131,55 +167,55 @@ def create_orbital_curve(planet_name, data, index, parent_object):
     
     return curve_object
 
-def find_min_max_distance_points(planet1_data, planet2_data):
+def calculate_distance_matrix(points1: List[Vector], points2: List[Vector]) -> np.ndarray:
+    """Calculate distance matrix between two sets of points using vectorized operations."""
+    # Convert to numpy arrays for faster calculation
+    np_points1 = np.array([[p.x, p.y, p.z] for p in points1])
+    np_points2 = np.array([[p.x, p.y, p.z] for p in points2])
+    
+    # Calculate distances using broadcasting
+    # This creates a matrix of shape (len(points1), len(points2))
+    distances = np.zeros((len(points1), len(points2)))
+    
+    # Vectorized distance calculation
+    for i in range(len(points1)):
+        # Broadcasting subtraction
+        diff = np_points1[i] - np_points2
+        # Calculate Euclidean distance for all points at once
+        distances[i] = np.sqrt(np.sum(diff**2, axis=1))
+    
+    return distances
+
+def find_min_max_distance_points(planet1: str, planet2: str) -> Dict[str, Any]:
     """Find the points of minimum and maximum distance between two orbits."""
-    # Sample points along both orbits
+    # Get orbital points (cached)
+    orbit1_points = get_orbital_points(planet1)
+    orbit2_points = get_orbital_points(planet2)
+    
+    # Calculate distance matrix
+    distance_matrix = calculate_distance_matrix(orbit1_points, orbit2_points)
+    
+    # Find minimum and maximum distances
+    min_idx = np.unravel_index(np.argmin(distance_matrix), distance_matrix.shape)
+    max_idx = np.unravel_index(np.argmax(distance_matrix), distance_matrix.shape)
+    
+    # Get corresponding theta values
     theta_values = np.linspace(0, 2*np.pi, NUM_POINTS)
-    
-    orbit1_points = [calculate_point_on_orbit(planet1_data, t) for t in theta_values]
-    orbit2_points = [calculate_point_on_orbit(planet2_data, t) for t in theta_values]
-    
-    # Calculate distances between all pairs of points
-    min_distance = float('inf')
-    max_distance = 0
-    min_point1 = None
-    min_point2 = None
-    max_point1 = None
-    max_point2 = None
-    min_theta1 = min_theta2 = max_theta1 = max_theta2 = 0
-    
-    # For better performance, we could optimize this with numpy operations
-    # But the direct approach is more readable
-    for i, point1 in enumerate(orbit1_points):
-        for j, point2 in enumerate(orbit2_points):
-            distance = (point1 - point2).length
-            
-            if distance < min_distance:
-                min_distance = distance
-                min_point1 = point1
-                min_point2 = point2
-                min_theta1 = theta_values[i]
-                min_theta2 = theta_values[j]
-                
-            if distance > max_distance:
-                max_distance = distance
-                max_point1 = point1
-                max_point2 = point2
-                max_theta1 = theta_values[i]
-                max_theta2 = theta_values[j]
+    min_theta1 = theta_values[min_idx[0]]
+    min_theta2 = theta_values[min_idx[1]]
+    max_theta1 = theta_values[max_idx[0]]
+    max_theta2 = theta_values[max_idx[1]]
     
     # Refine the search around the approximate minimum and maximum
-    # This uses a simple gradient descent approach to get more precise points
-    min_theta1, min_theta2 = refine_extremum(planet1_data, planet2_data, min_theta1, min_theta2, is_minimum=True)
-    max_theta1, max_theta2 = refine_extremum(planet1_data, planet2_data, max_theta1, max_theta2, is_minimum=False)
+    min_theta1, min_theta2 = refine_extremum(planet1, planet2, min_theta1, min_theta2, is_minimum=True)
+    max_theta1, max_theta2 = refine_extremum(planet1, planet2, max_theta1, max_theta2, is_minimum=False)
     
-    # Recalculate the points with refined angles
-    min_point1 = calculate_point_on_orbit(planet1_data, min_theta1)
-    min_point2 = calculate_point_on_orbit(planet2_data, min_theta2)
-    max_point1 = calculate_point_on_orbit(planet1_data, max_theta1)
-    max_point2 = calculate_point_on_orbit(planet2_data, max_theta2)
+    # Calculate final points and distances
+    min_point1 = calculate_point_on_orbit(precomputed_planet_data[planet1], min_theta1)
+    min_point2 = calculate_point_on_orbit(precomputed_planet_data[planet2], min_theta2)
+    max_point1 = calculate_point_on_orbit(precomputed_planet_data[planet1], max_theta1)
+    max_point2 = calculate_point_on_orbit(precomputed_planet_data[planet2], max_theta2)
     
-    # Calculate final distances
     min_distance = (min_point1 - min_point2).length
     max_distance = (max_point1 - max_point2).length
     
@@ -196,10 +232,13 @@ def find_min_max_distance_points(planet1_data, planet2_data):
         'max_theta2': max_theta2
     }
 
-def refine_extremum(planet1_data, planet2_data, theta1, theta2, is_minimum=True, steps=5, step_size=0.001):
-    """Refine the extremum point using gradient descent."""
+def refine_extremum(planet1: str, planet2: str, theta1: float, theta2: float, 
+                   is_minimum: bool = True, steps: int = 5, step_size: float = 0.001) -> Tuple[float, float]:
+    """Refine the extremum point using gradient descent with adaptive step size."""
     current_theta1 = theta1
     current_theta2 = theta2
+    planet1_data = precomputed_planet_data[planet1]
+    planet2_data = precomputed_planet_data[planet2]
     
     for _ in range(steps):
         # Calculate current distance
@@ -208,9 +247,10 @@ def refine_extremum(planet1_data, planet2_data, theta1, theta2, is_minimum=True,
         current_distance = (p1 - p2).length
         
         # Try small steps in each direction
-        distances = []
-        theta_pairs = []
+        best_distance = current_distance if is_minimum else -current_distance
+        best_thetas = (current_theta1, current_theta2)
         
+        # Check gradient in 8 directions
         for dt1 in [-step_size, 0, step_size]:
             for dt2 in [-step_size, 0, step_size]:
                 if dt1 == 0 and dt2 == 0:
@@ -223,19 +263,15 @@ def refine_extremum(planet1_data, planet2_data, theta1, theta2, is_minimum=True,
                 p2_new = calculate_point_on_orbit(planet2_data, new_theta2)
                 new_distance = (p1_new - p2_new).length
                 
-                distances.append(new_distance)
-                theta_pairs.append((new_theta1, new_theta2))
-        
-        # Find the best step
-        if is_minimum:
-            best_idx = np.argmin(distances)
-        else:
-            best_idx = np.argmax(distances)
+                # Update if better (smaller for minimum, larger for maximum)
+                if (is_minimum and new_distance < best_distance) or \
+                   (not is_minimum and new_distance > best_distance):
+                    best_distance = new_distance
+                    best_thetas = (new_theta1, new_theta2)
         
         # Update if we found a better extremum
-        if (is_minimum and distances[best_idx] < current_distance) or \
-           (not is_minimum and distances[best_idx] > current_distance):
-            current_theta1, current_theta2 = theta_pairs[best_idx]
+        if best_thetas != (current_theta1, current_theta2):
+            current_theta1, current_theta2 = best_thetas
         else:
             # If no improvement, reduce step size and try again
             step_size /= 2
@@ -246,7 +282,8 @@ def refine_extremum(planet1_data, planet2_data, theta1, theta2, is_minimum=True,
     
     return current_theta1, current_theta2
 
-def create_empty_in_collection(name, collection, location=(0, 0, 0), empty_type='PLAIN_AXES', size=0.2):
+def create_empty_in_collection(name: str, collection: Any, location: Tuple[float, float, float] = (0, 0, 0), 
+                              empty_type: str = 'PLAIN_AXES', size: float = 0.2) -> Any:
     """Create an empty object and add it to the specified collection."""
     # Create the empty object
     bpy.ops.object.empty_add(type=empty_type, location=location)
@@ -260,7 +297,7 @@ def create_empty_in_collection(name, collection, location=(0, 0, 0), empty_type=
     
     return empty
 
-def create_distance_indicators(planet1, planet2, sun_obj, result):
+def create_distance_indicators(planet1: str, planet2: str, sun_obj: Any, result: Dict[str, Any]) -> Dict[str, Any]:
     """Create the distance indicator empties with proper parenting."""
     # Create master empty for organizing the distance indicators
     master_empty = create_empty_in_collection(
@@ -359,7 +396,7 @@ for planet1, planet2 in planet_pairs:
     print(f"Calculating distances between {planet1} and {planet2}...")
     
     # Find minimum and maximum distances
-    result = find_min_max_distance_points(planets[planet1], planets[planet2])
+    result = find_min_max_distance_points(planet1, planet2)
     
     # Create distance indicators for this pair
     summary = create_distance_indicators(planet1, planet2, sun_distances, result)
@@ -376,3 +413,7 @@ print("----------------------------------------------------------")
 for res in distance_results:
     ratio = res['max_distance'] / res['min_distance']
     print(f"{res['pair']:<17} {res['min_distance']:10.6f} {res['max_distance']:10.6f} {ratio:10.2f}")
+
+# Print execution time
+end_time = time.time()
+print(f"\nExecution time: {end_time - start_time:.2f} seconds")
