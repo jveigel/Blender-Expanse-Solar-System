@@ -1,4 +1,4 @@
-# Expanse Blender Solar System Scripts
+# The Expanse Solar System Blender and Calculator Scripts
 
 ## Scripts
 
