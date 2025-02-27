@@ -199,12 +199,7 @@ const EpsteinDriveCalculator = () => {
         <div className="bg-zinc-800 p-4 rounded-md shadow border border-zinc-700">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold text-zinc-200">Ship Parameters</h3>
-            <button 
-              onClick={resetToNauvooSpecs}
-              className="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
-            >
-              Reset to Nauvoo Specs
-            </button>
+            
           </div>
           
           <div className="mb-4">
@@ -321,7 +316,13 @@ const EpsteinDriveCalculator = () => {
                 </option>
               ))}
             </select>
-          </div>
+            
+          </div><button 
+              onClick={resetToNauvooSpecs}
+              className="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            >
+              Reset to Nauvoo Specs
+            </button>
         </div>
         
         {/* Results Display */}
