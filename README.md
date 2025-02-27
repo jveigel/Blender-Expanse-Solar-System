@@ -1,4 +1,20 @@
 # Expanse Blender Solar System Scripts
+
+## Scripts
+Python scripts to create accurate orbits in Blender:
+* `Blender_Orbits_Jupiter.py`
+* `Blender_Orbits_Saturn.py`
+* `Blender_Orbits_SolarSystem.py`
+
+Creates an image file of scale accurate orbits at about 10,000 px:
+* `SolarSystemScale8k_Accurate.py`
+
+Saves a csv and markdown file with the results of the brachistochrone trajectories at 1/3g:
+* `BrachistochroneCalc.py`
+
+Attempts to estimate the interstellar travel times using the relativistic brachistochrone equation for the Nauvoo from the Expanse. It is not very accurate, canonically or scientifically:
+* `Brachistochrone_Relativistic_Calculator_Epstein.py`
+
 ## Brachistochrone Travel Times (1/3g)
 
 ### Travel Time Matrix
@@ -57,18 +73,3 @@
 | Earth -> Neptune | 26d 13h | 27d 18h | 7,497 | 7,842 |
 | Venus -> Neptune | 26d 16h | 27d 15h | 7,534 | 7,806 |
 | Mercury -> Neptune | 26d 19h | 27d 12h | 7,568 | 7,773 |
-
-## Scripts
-Python scripts to create accurate orbits in Blender:
-* `Blender_Orbits_Jupiter.py`
-* `Blender_Orbits_Saturn.py`
-* `Blender_Orbits_SolarSystem.py`
-
-Creates an image file of scale accurate orbits at about 10,000 px:
-* `SolarSystemScale8k_Accurate.py`
-
-Saves a csv and markdown file with the results of the brachistochrone trajectories at 1/3g:
-* `BrachistochroneCalc.py`
-
-Attempts to estimate the interstellar travel times using the relativistic brachistochrone equation for the Nauvoo from the Expanse. It is not very accurate, canonically or scientifically:
-* `Brachistochrone_Relativistic_Calculator_Epstein.py`
