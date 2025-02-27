@@ -13,6 +13,8 @@ Python version saves a csv and markdown file with the results of the brachistoch
 
 Are scripts that attempt to estimate the interstellar travel times using a relativistic brachistochrone equation for the Nauvoo from the Expanse. I'm not sure how accurate it is. Python version outputs to .csv and .md, and the .jsx is a React component version.
 
+***
+
 `Blender_Orbits_Jupiter.py`
 `Blender_Orbits_Saturn.py`
 `Blender_Orbits_SolarSystem.py`
@@ -23,7 +25,7 @@ Are scripts that attempt to estimate the interstellar travel times using a relat
 
 `SolarSystemScale8k_Accurate.py`
 
-Creates an image file of scale accurate orbits at about 10,000 px:
+Creates an image file of scale accurate orbits at about 10,000 px.
 
 ## Brachistochrone Travel Times (1/3g)
 
