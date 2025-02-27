@@ -1,6 +1,6 @@
-// EpsteinDriveCalculator v0.1
-
 import React, { useState, useEffect } from 'react';
+
+const VERSION = "v0.1"; 
 
 // Physical constants
 const C = 299792458; // Speed of light in m/s
@@ -29,6 +29,8 @@ const NAUVOO_SPECS = {
   star: STAR_SYSTEMS[0] // Tau Ceti
 };
 
+
+
 const EpsteinDriveCalculator = () => {
   // Ship parameters
   const [dryMass, setDryMass] = useState(NAUVOO_SPECS.dryMass);
@@ -37,6 +39,7 @@ const EpsteinDriveCalculator = () => {
   const [efficiency, setEfficiency] = useState(NAUVOO_SPECS.efficiency);
   const [maxVelocity, setMaxVelocity] = useState(NAUVOO_SPECS.maxVelocity);
   const [selectedStar, setSelectedStar] = useState(NAUVOO_SPECS.star);
+  const [flightProfile, setFlightProfile] = useState('standard'); // 'standard' or 'brachistochrone'
   
   // Calculated results
   const [results, setResults] = useState(null);
@@ -67,52 +70,106 @@ const EpsteinDriveCalculator = () => {
     // Calculate acceleration
     const initialAcceleration = thrust / dryMass;
     
-    // Calculate time needed to reach cruise velocity
-    const timeToVelocity = maxVelocity / initialAcceleration;
-    
-    // Calculate fuel needed for acceleration
-    const fuelForAccel = massFlowRate * timeToVelocity;
-    const totalFuelMass = 2 * fuelForAccel; // Double for deceleration
-    
-    // Calculate mass ratio
-    const massRatio = (dryMass + totalFuelMass) / dryMass;
-    
-    // Calculate relativistic factors
-    const gamma = 1 / Math.sqrt(1 - Math.pow(maxVelocity/C, 2));
-    
-    // Calculate journey times
-    const accelerationDistance = 0.5 * initialAcceleration * Math.pow(timeToVelocity, 2);
-    const coastDistance = distance - (2 * accelerationDistance);
-    const coastTime = coastDistance / maxVelocity;
-    
-    const totalCoordinateTime = coastTime + (2 * timeToVelocity);
-    const totalProperTime = (coastTime/gamma) + (2 * timeToVelocity/gamma);
-    
-    // Power calculations
-    const powerOutput = (thrust * exhaustVelocity) / 2;
-    const theoreticalPower = massFlowRate * 3.52e14; // D-He3 fusion energy
-    
-    setResults({
-      acceleration: initialAcceleration / 9.8, // in g
-      accelerationTime: timeToVelocity / (24 * 3600), // days
-      coastTime: coastTime / YEAR_TO_SECONDS, // years
-      totalTime: totalCoordinateTime / YEAR_TO_SECONDS, // years
-      shipTime: totalProperTime / YEAR_TO_SECONDS, // years
-      fuelMass: totalFuelMass / 1000, // tons
-      massRatio: massRatio,
-      peakVelocity: maxVelocity / C, // fraction of c
-      gamma: gamma,
-      powerOutput: powerOutput,
-      theoreticalPower: theoreticalPower,
-      massFlowRate: massFlowRate, // kg/s
-      efficiency: (powerOutput / theoreticalPower) * 100 // percent
-    });
+    if (flightProfile === 'standard') {
+      // Standard flight profile: accelerate, coast, decelerate
+      
+      // Calculate time needed to reach cruise velocity
+      const timeToVelocity = maxVelocity / initialAcceleration;
+      
+      // Calculate fuel needed for acceleration
+      const fuelForAccel = massFlowRate * timeToVelocity;
+      const totalFuelMass = 2 * fuelForAccel; // Double for deceleration
+      
+      // Calculate mass ratio
+      const massRatio = (dryMass + totalFuelMass) / dryMass;
+      
+      // Calculate relativistic factors
+      const gamma = 1 / Math.sqrt(1 - Math.pow(maxVelocity/C, 2));
+      
+      // Calculate journey times
+      const accelerationDistance = 0.5 * initialAcceleration * Math.pow(timeToVelocity, 2);
+      const coastDistance = distance - (2 * accelerationDistance);
+      const coastTime = coastDistance / maxVelocity;
+      
+      const totalCoordinateTime = coastTime + (2 * timeToVelocity);
+      const totalProperTime = (coastTime/gamma) + (2 * timeToVelocity/gamma);
+      
+      // Power calculations
+      const powerOutput = (thrust * exhaustVelocity) / 2;
+      const theoreticalPower = massFlowRate * 3.52e14; // D-He3 fusion energy
+      
+      setResults({
+        flightProfile: 'standard',
+        acceleration: initialAcceleration / 9.8, // in g
+        accelerationTime: timeToVelocity / (24 * 3600), // days
+        coastTime: coastTime / YEAR_TO_SECONDS, // years
+        totalTime: totalCoordinateTime / YEAR_TO_SECONDS, // years
+        shipTime: totalProperTime / YEAR_TO_SECONDS, // years
+        fuelMass: totalFuelMass / 1000, // tons
+        massRatio: massRatio,
+        peakVelocity: maxVelocity / C, // fraction of c
+        gamma: gamma,
+        powerOutput: powerOutput,
+        theoreticalPower: theoreticalPower,
+        massFlowRate: massFlowRate, // kg/s
+        efficiency: (powerOutput / theoreticalPower) * 100 // percent
+      });
+    } else {
+      // True brachistochrone trajectory: continuous acceleration and deceleration
+      
+      // For brachistochrone trajectory, we use the formula:
+      // t = 2 * sqrt(d/a) for time
+      // where d is distance and a is acceleration
+      
+      // Calculate time for half-journey (acceleration phase)
+      const halfDistance = distance / 2;
+      const timeToMidpoint = Math.sqrt(2 * halfDistance / initialAcceleration);
+      const totalTime = 2 * timeToMidpoint; // Double for deceleration phase
+      
+      // Calculate peak velocity at midpoint
+      const peakVelocity = initialAcceleration * timeToMidpoint;
+      
+      // Calculate relativistic factors for peak velocity
+      const peakGamma = 1 / Math.sqrt(1 - Math.pow(peakVelocity/C, 2));
+      
+      // Calculate fuel needed
+      const fuelForAccel = massFlowRate * timeToMidpoint;
+      const totalFuelMass = 2 * fuelForAccel; // Double for deceleration
+      
+      // Calculate mass ratio
+      const massRatio = (dryMass + totalFuelMass) / dryMass;
+      
+      // Calculate proper time (ship time) accounting for relativistic effects
+      // This is more complex for continuous acceleration, but we'll use an approximation
+      const totalProperTime = 2 * (C / initialAcceleration) * Math.asinh(initialAcceleration * timeToMidpoint / C);
+      
+      // Power calculations
+      const powerOutput = (thrust * exhaustVelocity) / 2;
+      const theoreticalPower = massFlowRate * 3.52e14; // D-He3 fusion energy
+      
+      setResults({
+        flightProfile: 'brachistochrone',
+        acceleration: initialAcceleration / 9.8, // in g
+        accelerationTime: timeToMidpoint / (24 * 3600), // days for half-journey
+        coastTime: 0, // No coasting in brachistochrone
+        totalTime: totalTime / YEAR_TO_SECONDS, // years
+        shipTime: totalProperTime / YEAR_TO_SECONDS, // years
+        fuelMass: totalFuelMass / 1000, // tons
+        massRatio: massRatio,
+        peakVelocity: peakVelocity / C, // fraction of c
+        gamma: peakGamma,
+        powerOutput: powerOutput,
+        theoreticalPower: theoreticalPower,
+        massFlowRate: massFlowRate, // kg/s
+        efficiency: (powerOutput / theoreticalPower) * 100 // percent
+      });
+    }
   };
 
   // Recalculate when parameters change
   useEffect(() => {
     calculateResults();
-  }, [dryMass, thrust, exhaustVelocity, efficiency, maxVelocity, selectedStar]);
+  }, [dryMass, thrust, exhaustVelocity, efficiency, maxVelocity, selectedStar, flightProfile]);
 
   // Format values for display
   const dryMassKilotons = dryMass / 1000000;
@@ -133,13 +190,15 @@ const EpsteinDriveCalculator = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-zinc-900 border border-zinc-800 rounded-md shadow-lg">
-      <h2 className="text-2xl font-bold text-white mb-6">Epstein Drive Interstellar Calculator v0.1</h2>
+      <h2 className="text-2xl font-bold mb-6 text-zinc-100">
+        Epstein Drive Interstellar Calculator <span className="text-base font-normal text-sky-400">{VERSION}</span>
+      </h2>
       
       <div className="grid md:grid-cols-2 gap-6">
         {/* Input Controls */}
         <div className="bg-zinc-800 p-4 rounded-md shadow border border-zinc-700">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-zinc-200">Ship Parameters</h2>
+            <h3 className="text-xl font-semibold text-zinc-200">Ship Parameters</h3>
             <button 
               onClick={resetToNauvooSpecs}
               className="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-sm hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
@@ -167,15 +226,22 @@ const EpsteinDriveCalculator = () => {
             <label className="block text-sm font-medium text-zinc-300 mb-1">
               Total Thrust: {formatNumber(thrustMN)} MN
             </label>
-            <input
-              type="range"
-              min={10000000}
-              max={1000000000}
-              step={10000000}
-              value={thrust}
-              onChange={(e) => setThrust(Number(e.target.value))}
-              className="w-full h-2 bg-zinc-700 rounded-md appearance-none cursor-pointer accent-sky-500"
-            />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-zinc-500">1 MN</span>
+              <input
+                type="range"
+                min={1000000}
+                max={1000000000}
+                step={1000000}
+                value={thrust}
+                onChange={(e) => setThrust(Number(e.target.value))}
+                className="w-full h-2 bg-zinc-700 rounded-md appearance-none cursor-pointer accent-sky-500"
+              />
+              <span className="text-xs text-zinc-500">1,000 MN</span>
+            </div>
+            <div className="mt-1 text-xs text-zinc-500">
+              (For reference: Saturn V ~35 MN, Falcon Heavy ~22 MN)
+            </div>
           </div>
           
           <div className="mb-4">
@@ -195,18 +261,50 @@ const EpsteinDriveCalculator = () => {
           
           <div className="mb-4">
             <label className="block text-sm font-medium text-zinc-300 mb-1">
-              Maximum Velocity: {formatNumber(maxVelocityC * 100, 2)}% c
+              Flight Profile
             </label>
-            <input
-              type="range"
-              min={0.05 * C}
-              max={0.25 * C}
-              step={0.01 * C}
-              value={maxVelocity}
-              onChange={(e) => setMaxVelocity(Number(e.target.value))}
-              className="w-full h-2 bg-zinc-700 rounded-md appearance-none cursor-pointer accent-sky-500"
-            />
+            <div className="flex space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  className="form-radio h-4 w-4 text-sky-600 bg-zinc-700 border-zinc-600"
+                  checked={flightProfile === 'standard'}
+                  onChange={() => setFlightProfile('standard')}
+                />
+                <span className="ml-2 text-zinc-300">Standard (Accel → Coast → Decel)</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  className="form-radio h-4 w-4 text-sky-600 bg-zinc-700 border-zinc-600"
+                  checked={flightProfile === 'brachistochrone'}
+                  onChange={() => setFlightProfile('brachistochrone')}
+                />
+                <span className="ml-2 text-zinc-300">Brachistochrone (Continuous Accel/Decel)</span>
+              </label>
+            </div>
           </div>
+          
+          {flightProfile === 'standard' && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-zinc-300 mb-1">
+                <span className="font-bold">Maximum Cruise Velocity:</span> {formatNumber(maxVelocityC * 100, 2)}% of light speed
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-500">1%</span>
+                <input
+                  type="range"
+                  min={0.01 * C}
+                  max={0.95 * C}
+                  step={0.05 * C}
+                  value={maxVelocity}
+                  onChange={(e) => setMaxVelocity(Number(e.target.value))}
+                  className="w-full h-3 bg-zinc-700 rounded-md appearance-none cursor-pointer accent-sky-500"
+                />
+                <span className="text-xs text-zinc-500">95%</span>
+              </div>
+            </div>
+          )}
           
           <div className="mb-4">
             <label className="block text-sm font-medium text-zinc-300 mb-1">
@@ -228,7 +326,7 @@ const EpsteinDriveCalculator = () => {
         
         {/* Results Display */}
         <div className="bg-zinc-800 p-4 rounded-md shadow border border-zinc-700">
-          <h2 className="text-xl font-semibold mb-4 text-zinc-200">Journey Results</h2>
+          <h3 className="text-xl font-semibold mb-4 text-zinc-200">Journey Results</h3>
           
           {results && (
             <div className="space-y-3">
@@ -252,13 +350,28 @@ const EpsteinDriveCalculator = () => {
                     <span className="font-medium text-zinc-200">{formatNumber(results.acceleration, 2)} g</span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-zinc-400">Acceleration Phase:</span>
-                    <span className="font-medium text-zinc-200">{formatNumber(results.accelerationTime)} days</span>
+                    <span className="text-zinc-400">Flight Profile:</span>
+                    <span className="font-medium text-zinc-200">
+                      {results.flightProfile === 'standard' ? 'Standard' : 'Brachistochrone'}
+                    </span>
                   </li>
-                  <li className="flex justify-between">
-                    <span className="text-zinc-400">Coast Phase:</span>
-                    <span className="font-medium text-zinc-200">{formatNumber(results.coastTime)} years</span>
-                  </li>
+                  {results.flightProfile === 'standard' ? (
+                    <>
+                      <li className="flex justify-between">
+                        <span className="text-zinc-400">Acceleration Phase:</span>
+                        <span className="font-medium text-zinc-200">{formatNumber(results.accelerationTime)} days</span>
+                      </li>
+                      <li className="flex justify-between">
+                        <span className="text-zinc-400">Coast Phase:</span>
+                        <span className="font-medium text-zinc-200">{formatNumber(results.coastTime)} years</span>
+                      </li>
+                    </>
+                  ) : (
+                    <li className="flex justify-between">
+                      <span className="text-zinc-400">Acceleration Phase:</span>
+                      <span className="font-medium text-zinc-200">{formatNumber(results.accelerationTime)} days (half journey)</span>
+                    </li>
+                  )}
                   <li className="flex justify-between">
                     <span className="text-zinc-400">Time Dilation Factor:</span>
                     <span className="font-medium text-zinc-200">{results.gamma.toFixed(3)}</span>
@@ -308,6 +421,7 @@ const EpsteinDriveCalculator = () => {
       
       <div className="mt-6 text-sm text-zinc-400">
         <p>Based on the Epstein Drive from The Expanse universe. Uses relativistic calculations for high-velocity travel.</p>
+        <p className="mt-1"><strong>Note:</strong> The original Nauvoo specifications target 11.9% of light speed for a 100-year journey to Tau Ceti. At very high velocities (more than 80% of light speed), relativistic effects become extreme. With very low thrust values, travel times may become impractically long for interstellar journeys.</p>
       </div>
     </div>
   );

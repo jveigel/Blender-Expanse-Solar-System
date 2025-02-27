@@ -1,6 +1,6 @@
-// BrachistochroneCalculator v0.1
-
 import React, { useState, useEffect } from 'react';
+
+const VERSION = "v0.1";
 
 // Physical constants
 const CONSTANTS = {
@@ -195,7 +195,9 @@ const BrachistochroneCalculator = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-zinc-900 border border-zinc-800 rounded-lg shadow-lg mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-white">Solar System Brachistochrone Calculator v0.1</h2>
+      <h2 className="text-2xl font-bold mb-6 text-zinc-100">
+        Solar System Brachistochrone Calculator <span className="text-base font-normal text-sky-400">{VERSION}</span>
+      </h2>
       
       <div className="grid md:grid-cols-2 gap-6">
         {/* Input Controls */}
