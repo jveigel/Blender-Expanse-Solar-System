@@ -36,7 +36,9 @@ planet_pairs = [
     ('Mars', 'Jupiter'),
     ('Jupiter', 'Saturn'),
     ('Saturn', 'Ceres'),
-    ('Neptune', 'Uranus')
+    ('Neptune', 'Uranus'),
+    ('Saturn', 'Mars'),   # Added new pair
+    ('Saturn', 'Earth')   # Added new pair
 ]
 
 # Configuration
@@ -300,8 +302,9 @@ def create_empty_in_collection(name: str, collection: Any, location: Tuple[float
 def create_distance_indicators(planet1: str, planet2: str, sun_obj: Any, result: Dict[str, Any]) -> Dict[str, Any]:
     """Create the distance indicator empties with proper parenting."""
     # Create master empty for organizing the distance indicators
+    pair_name = f"{planet1}_{planet2}"
     master_empty = create_empty_in_collection(
-        f"{planet1}_{planet2}", 
+        pair_name, 
         distances_collection, 
         empty_type='PLAIN_AXES', 
         size=0.4
@@ -310,13 +313,13 @@ def create_distance_indicators(planet1: str, planet2: str, sun_obj: Any, result:
 
     # Create parent empties for min and max under the master empty
     parent_min = create_empty_in_collection(
-        f"{planet1}_{planet2}.min", 
+        f"{pair_name}.min", 
         distances_collection, 
         empty_type='PLAIN_AXES', 
         size=0.3
     )
     parent_max = create_empty_in_collection(
-        f"{planet1}_{planet2}.max", 
+        f"{pair_name}.max", 
         distances_collection, 
         empty_type='PLAIN_AXES', 
         size=0.3
@@ -324,30 +327,30 @@ def create_distance_indicators(planet1: str, planet2: str, sun_obj: Any, result:
     parent_min.parent = master_empty
     parent_max.parent = master_empty
 
-    # Create empties for point markers
+    # Create empties for point markers with unique names
     p1_min_empty = create_empty_in_collection(
-        f"{planet1}.min", 
+        f"{pair_name}.{planet1}_min", 
         distances_collection, 
         location=result['min_point1'], 
         empty_type='SPHERE', 
         size=0.15
     )
     p1_max_empty = create_empty_in_collection(
-        f"{planet1}.max", 
+        f"{pair_name}.{planet1}_max", 
         distances_collection, 
         location=result['max_point1'], 
         empty_type='SPHERE', 
         size=0.15
     )
     p2_min_empty = create_empty_in_collection(
-        f"{planet2}.min", 
+        f"{pair_name}.{planet2}_min", 
         distances_collection, 
         location=result['min_point2'], 
         empty_type='SPHERE', 
         size=0.15
     )
     p2_max_empty = create_empty_in_collection(
-        f"{planet2}.max", 
+        f"{pair_name}.{planet2}_max", 
         distances_collection, 
         location=result['max_point2'], 
         empty_type='SPHERE', 
